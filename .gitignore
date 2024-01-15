@@ -1,6 +1,9 @@
 # Cache files
 *cache*
 
+# FLask session
+*flask_session*
+
 # Project notes
 *note*
 
