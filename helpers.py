@@ -1,64 +1,69 @@
-import os
-import requests
-import urllib.parse
+"""Helper functions"""
 
-from flask import redirect, render_template, request, session
+
+# Built-in imports
 from functools import wraps
 
+# PIP imports
+from flask import redirect, render_template, session
 
-def apology(message, code=400):
+
+def init_cls(cls):
+    """Initialize class"""
+    cls.init()
+    return cls()
+
+
+def render_error(message, code=400):
     """Render message as an apology to user."""
+
     def escape(s):
         """
         Escape special characters.
 
         https://github.com/jacebrowning/memegen#special-characters
         """
-        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
-                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
+        for old, new in [
+            ("-", "--"),
+            (" ", "-"),
+            ("_", "__"),
+            ("?", "~q"),
+            ("%", "~p"),
+            ("#", "~h"),
+            ("/", "~s"),
+            ('"', "''"),
+        ]:
             s = s.replace(old, new)
         return s
+
     return render_template("apology.html", top=code, bottom=escape(message)), code
 
 
-def login_required(f):
+def login_required(func):
     """
     Decorate routes to require login.
 
     https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
     """
-    @wraps(f)
+
+    @wraps(func)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
             return redirect("/login")
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
+
     return decorated_function
-
-
-def lookup(symbol):
-    """Look up quote for symbol."""
-
-    # Contact API
-    try:
-        api_key = os.environ.get("API_KEY")
-        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/quote?token={api_key}"
-        response = requests.get(url)
-        response.raise_for_status()
-    except requests.RequestException:
-        return None
-
-    # Parse response
-    try:
-        quote = response.json()
-        return {
-            "name": quote["companyName"],
-            "price": float(quote["latestPrice"]),
-            "symbol": quote["symbol"]
-        }
-    except (KeyError, TypeError, ValueError):
-        return None
 
 
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+
+
+def validate_cash_value(value):
+    """Validate cash value"""
+    if not value:
+        return render_error("Please provide cash value", 403)
+
+    if not value.isdigit() and (int(value) < 0):
+        return render_error("Value must be an integer more than zero", 403)
