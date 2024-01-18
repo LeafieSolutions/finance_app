@@ -3,6 +3,7 @@
 
 # Built-in imports
 import os
+from pathlib import Path
 
 # PIP imports
 from flask import Flask, redirect, render_template, request, session
@@ -24,9 +25,17 @@ from .handlers import (
     User,
 )
 
+# Base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Configure application
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=BASE_DIR / "templates",
+    static_url_path="/assets",
+    static_folder=BASE_DIR / "assets",
+)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
