@@ -3,7 +3,6 @@
 
 # Built-in imports
 import os
-from pathlib import Path
 
 # PIP imports
 from flask import Flask, redirect, render_template, request, session
@@ -18,23 +17,22 @@ from .helpers import (
     validate_cash_value,
 )
 from .handlers import (
+    ASSETS_DIR,
     COMPANY_NAMES,
+    TEMPLATES_DIR,
     Company,
     State,
     Transaction,
     User,
 )
 
-# Base directory
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Configure application
 app = Flask(
     __name__,
-    template_folder=BASE_DIR / "templates",
+    template_folder=TEMPLATES_DIR,
     static_url_path="/assets",
-    static_folder=BASE_DIR / "assets",
+    static_folder=ASSETS_DIR,
 )
 
 # Ensure templates are auto-reloaded
@@ -131,8 +129,6 @@ def register():
             request.form.get("confirm_password"),
         )
 
-        print(username, password, confirmation)
-
         # Confirmed password matches
         if password != confirmation:
             return render_error("Passwords don't match", 403)
@@ -146,6 +142,8 @@ def register():
 
         # Remember which user has logged in
         session["user_id"] = User.get_id(username)
+
+        # Add user to state logs
 
         # Redirect user to home page
         return redirect("/")
@@ -168,8 +166,8 @@ def logout():
     return redirect("/")
 
 
-@app.route("/")
 @app.route("/home")
+@app.route("/")
 @login_required
 def homepage():
     """Show portfolio of stocks"""
@@ -275,7 +273,7 @@ def buy():
         # Insert transaction into database and update user cash
         Transaction.insert(user_id, ticker, "buy", shares, price)
         User.update_cash(user_id, total_share_cost, "remove")
-        State.update(user_id, ticker, shares, "buy")
+        State.update_ticker(user_id, ticker, shares, "buy")
 
         # Show buy popup message
         return render_template(
@@ -339,7 +337,7 @@ def sell():
         # Insert transaction into database and update user cash
         Transaction.insert(user_id, ticker, "sell", shares, price)
         User.update_cash(user_id, total_share_cost, "add")
-        State.update(user_id, ticker, shares, "sell")
+        State.update_ticker(user_id, ticker, shares, "sell")
 
         # Show sell popup message
         return render_template(

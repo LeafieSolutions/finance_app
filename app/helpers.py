@@ -8,12 +8,6 @@ from functools import wraps
 from flask import redirect, render_template, session
 
 
-def init_cls(cls):
-    """Initialize class"""
-    cls.init()
-    return cls()
-
-
 def render_error(message, code=400):
     """Render message as an apology to user."""
 
