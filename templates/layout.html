@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../static/output.css">
-    <link rel="shortcut icon" href="../static/icons/favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="shortcut icon" href="../assets/icons/favicon.svg" type="image/x-icon">
 
     <title>Stock Portfolio Manager: {% block title %}{% endblock %}</title>
 </head>
@@ -15,11 +15,11 @@
     <nav class="bg-black p-2">
         {% if session["user_id"] %}
         <a href="/">
-            <img src="../static/icons/favicon.svg" alt="logo" class="logo">
+            <img src="../assets/icons/favicon.svg" alt="logo" class="logo">
         </a>
         {% else %}
         <a class="flex items-center justify-center gap-4" href="/">
-            <img src="../static/icons/favicon.svg" alt="logo" class="w-12 h-16">
+            <img src="../assets/icons/favicon.svg" alt="logo" class="w-12 h-16">
             <p class="text-white text-lg sm:text-2xl">Stock Portfolio Manager</p>
         </a>
         {% endif %}
@@ -30,7 +30,7 @@
     </main>
 
     <footer class="bg-black p-2 absolute bottom-0 w-full flex items-center justify-center gap-2">
-        <img src="../static/icons/favicon.svg" class="w-6 h-8">
+        <img src="../assets/icons/favicon.svg" class="w-6 h-8">
         <p class="text-white text-center text-lg sm:text-2xl">©
             2021 Stock
             Portfolio Manager</p>
