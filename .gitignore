@@ -7,6 +7,12 @@
 # FLask session
 *flask_session*
 
+# Node modules
+*node_modules*
+
+# Playground files
+*playground*
+
 # Project notes
 *note*
 
@@ -15,6 +21,3 @@
 
 # Vs Code Settings
 *code*
-
-# Node modules
-*node_modules*
