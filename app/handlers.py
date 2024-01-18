@@ -220,7 +220,6 @@ class State:
     @staticmethod
     def get_user_state(user_id) -> dict:
         """Get the state of a user"""
-        print(STATES)
 
         return STATES[str(user_id)]
 
