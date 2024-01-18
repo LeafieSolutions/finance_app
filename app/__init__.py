@@ -144,6 +144,9 @@ def register():
         # Insert user into database
         User.insert(username, generate_password_hash(password))
 
+        # Remember which user has logged in
+        session["user_id"] = User.get_id(username)
+
         # Redirect user to home page
         return redirect("/")
 
