@@ -10,13 +10,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
 # Second party imports
-from helpers import (
+from .helpers import (
     login_required,
     render_error,
     usd,
     validate_cash_value,
 )
-from handlers import (
+from .handlers import (
     COMPANY_NAMES,
     Company,
     State,
@@ -157,6 +157,7 @@ def logout():
 
 
 @app.route("/")
+@app.route("/home")
 @login_required
 def homepage():
     """Show portfolio of stocks"""
@@ -389,7 +390,3 @@ def update_profile():
 
     else:
         return render_error("Invalid request method", 403)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

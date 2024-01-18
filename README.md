@@ -34,7 +34,7 @@ where value is that (pasted) value, without any space immediately before or afte
 
     (*You also may wish to paste that value in a text document somewhere, in case you need it again later*).
 
-- Run Flask's server: `flask run`
+- Run Flask's server: `python -m app`
 
 - You can now trade stocks !!!
 
