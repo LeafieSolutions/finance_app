@@ -2,7 +2,6 @@
 
 
 # Builtins imports
-from json import dump, load
 from os import environ
 from pathlib import Path
 from urllib.parse import quote_plus as url_quote
@@ -28,7 +27,9 @@ DB = SQL(f"sqlite:///{DATA_DIR / 'finance.db'}")
 
 
 # Get company names from database
-COMPANY_NAMES = DB.execute("SELECT name FROM companies")
+COMPANY_NAMES = [
+    company["name"] for company in DB.execute("SELECT name FROM companies")
+]
 
 # Define transaction types
 TRANS_TYPES = {
