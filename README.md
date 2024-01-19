@@ -23,7 +23,7 @@
 
 - Create an **Individual Account** with a **free plan** at https://iexcloud.io/cloud-login#/register/
 
-- Confirm your account via confirmation emal
+- Confirm your account via confirmation email
 
 
 - Visit https://iexcloud.io/console/token and copy the key that appears under the Token column (it should begin with pk_).
