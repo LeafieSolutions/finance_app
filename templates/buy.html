@@ -8,12 +8,14 @@ Buy
 <div class="w-full flex flex-col items-center gap-10">
     <p class="text-center font-bold text-xl">Buy Shares</p>
     <form action="/buy" method="post" class="flex flex-col justify-center items-center gap-10 w-2/3">
-        <div class="w-full">
+        <div class="w-full relative">
             <label for="company_name" class="block text-slate-500 mb-2">Company</label>
             <input type="text" name="company_name" id="company_name" placeholder="Input company name"
                 class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
                 required>
-            <div>List</div>
+            <div id="displayNames"
+                class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
+            </div>
         </div>
         <div class="w-full">
             <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
@@ -29,35 +31,64 @@ Buy
     </form>
     <p></p>
     <script>
+        let company_name = document.querySelector("#company_name");
+        let listNames = document.querySelector("#displayNames");
+        const createElement = (element) => document.createElement(element);
+        let names = [];
+        let matched = [];
         apiUrl = "https://api.iex.cloud/v1/data/core/REF_DATA?token=pk_71f22086bccd4942b0ad62e770bec9d6";
+
         async function getNames() {
             let response = await fetch(apiUrl);
             let data = await response.json();
-            // console.log(data[0]);
             let names = createNames(data);
             checkNames(names);
-            // console.log(names);
         }
+
         getNames();
         function createNames(data) {
-            let names = [];
             for (let i = 0; i < data.length; i++) {
                 names.push(data[i].name);
             }
             return names;
         }
-        function checkNames(names) {
-            let matched = [];
-            // let userName = document.querySelector("#company_name").value;
-            let userName = "apple";
+
+
+        function displayNames() {
+            while (listNames.firstChild) {
+                listNames.removeChild(listNames.firstChild);
+            }
+            for (let i = 0; i < 5; i++) {
+                let button = createElement("button");
+                button.setAttribute('type', 'button');
+                // button.classList.add('border', 'border-slate-500', 'w-full')
+                button.textContent = matched[i];
+                listNames.appendChild(button);
+            }
+        }
+
+        function checkNames() {
+            matched = [];
+            let userName = company_name.value;
+            if (userName.length < 1) {
+                return;
+            }
             let matchName = new RegExp(userName, "i");
             names.forEach(name => {
                 if (matchName.test(name)) {
                     matched.push(name);
                 }
             });
-            console.log(matched);
+            if (matched.length > 0) {
+                displayNames();
+            }
         }
+
+        company_name.addEventListener('keyup', () => {
+            if (names) {
+                checkNames();
+            }
+        })
     </script>
 </div>
 {% endblock %}
