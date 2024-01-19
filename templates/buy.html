@@ -13,6 +13,7 @@ Buy
             <input type="text" name="company_name" id="company_name" placeholder="Input company name"
                 class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
                 required>
+            <div>List</div>
         </div>
         <div class="w-full">
             <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
@@ -24,14 +25,39 @@ Buy
             <button type="submit"
                 class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24">Buy</button>
         </div>
-        <p class="hidden" id="allNames">{{ company_names }}</p>
+        <input class="hidden" id="allNames" value="{{company_names}}">
     </form>
+    <p></p>
     <script>
-        // let company = document.querySelector('#company_name');
-        let companyNames = document.querySelector('#allNames').textContent;
-        console.log(typeof (companyNames))
-        console.log(companyNames)
-        // console.log(companyNames[0][1])
+        apiUrl = "https://api.iex.cloud/v1/data/core/REF_DATA?token=pk_71f22086bccd4942b0ad62e770bec9d6";
+        async function getNames() {
+            let response = await fetch(apiUrl);
+            let data = await response.json();
+            // console.log(data[0]);
+            let names = createNames(data);
+            checkNames(names);
+            // console.log(names);
+        }
+        getNames();
+        function createNames(data) {
+            let names = [];
+            for (let i = 0; i < data.length; i++) {
+                names.push(data[i].name);
+            }
+            return names;
+        }
+        function checkNames(names) {
+            let matched = [];
+            // let userName = document.querySelector("#company_name").value;
+            let userName = "apple";
+            let matchName = new RegExp(userName, "i");
+            names.forEach(name => {
+                if (matchName.test(name)) {
+                    matched.push(name);
+                }
+            });
+            console.log(matched);
+        }
     </script>
 </div>
 {% endblock %}
