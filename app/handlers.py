@@ -297,7 +297,9 @@ class State:
     def update(user_id, ticker, shares, action):
         """Update the state of a user"""
 
-        if not State.user_exists(user_id):
+        if (not State.user_exists(user_id)) or (
+            not State.ticker_exists(user_id, ticker)
+        ):
             DB.execute(
                 """
                 INSERT INTO states (user_id, comp_ticker, shares)
