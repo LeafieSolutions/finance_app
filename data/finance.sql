@@ -31,3 +31,14 @@ CREATE TABLE transactions (
         FOREIGN KEY(user_id) REFERENCES users(id),
         FOREIGN KEY(comp_ticker) REFERENCES companies(ticker)
 );
+
+
+CREATE TABLE states (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    user_id INTEGER NOT NULL,
+    comp_ticker TEXT NOT NULL UNIQUE,
+    shares INTEGER NOT NULL DEFAULT 0,
+
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(comp_ticker) REFERENCES companies(ticker)
+);
