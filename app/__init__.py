@@ -61,20 +61,6 @@ def after_request(response):
     return response
 
 
-@app.route("/history")
-@login_required
-def history():
-    """Show history of transactions"""
-    return (
-        render_template(
-            "history.html",
-            **{
-                "transactions": Transaction.get_all(session["user_id"]),
-            },
-        ),
-    )
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -144,6 +130,7 @@ def register():
         session["user_id"] = User.get_id(username)
 
         # Add user to state logs
+        State.add_user(session["user_id"])
 
         # Redirect user to home page
         return redirect("/")
@@ -171,26 +158,42 @@ def logout():
 @login_required
 def homepage():
     """Show portfolio of stocks"""
-    user_id = session["user_id"]
 
-    formatted_states = []
-    for state in State.get_user_state(user_id):
-        formatted_states += [
-            {
-                "ticker": state["ticker"],
-                "name": Company.get_name(state["ticker"]),
-                "price": Company.get_share_price(state["ticker"]),
-                "shares": state["shares"],
-            }
-        ]
+    if request.method == "POST":
+        return render_error("Invalid request method", 403)
+    elif request.method == "GET":
+        user_id = session["user_id"]
 
-    return render_template(
-        "homepage.html",
-        **{
-            "summary": formatted_states,
-            "cash": User.get_cash(user_id),
-        },
-    )
+        formatted_states = []
+        stocks_total = 0
+        for state in State.get_user_state(user_id):
+            price = Company.get_share_price(state["ticker"])
+            total = price * state["shares"]
+
+            formatted_states += [
+                {
+                    "name": Company.get_name(state["ticker"]),
+                    "ticker": state["ticker"],
+                    "price": price,
+                    "shares": state["shares"],
+                    "total": total,
+                }
+            ]
+            stocks_total += total
+
+        cash = User.get_cash(user_id)
+
+        return render_template(
+            "homepage.html",
+            **{
+                "summary": formatted_states,
+                "cash": cash,
+                "stocks_total": stocks_total,
+                "portfolio_total": stocks_total + cash,
+            },
+        )
+    else:
+        return render_error("Invalid request method", 403)
 
 
 @app.route("/quote", methods=["GET", "POST"])
@@ -270,9 +273,13 @@ def buy():
         if cash < total_share_cost:
             return render_error("Not enough cash", 403)
 
-        # Insert transaction into database and update user cash
+        # Insert transaction into database
         Transaction.insert(user_id, ticker, "buy", shares, price)
+
+        # Update user cash
         User.update_cash(user_id, total_share_cost, "remove")
+
+        # Update user state
         State.update_ticker(user_id, ticker, shares, "buy")
 
         # Show buy popup message
@@ -302,8 +309,9 @@ def buy():
 def sell():
     """Sell shares of stock"""
 
+    user_id = session["user_id"]
+
     if request.method == "POST":
-        user_id = session["user_id"]
         company_name = request.form.get("company_name")
         shares = request.form.get("shares")
 
@@ -312,6 +320,8 @@ def sell():
             return render_error("Please provide company name", 403)
         if not shares:
             return render_error("Please provide number of shares", 403)
+
+        print(company_name)
 
         ticker = Company.get_ticker(company_name)
 
@@ -334,9 +344,13 @@ def sell():
         price = Company.get_share_price(ticker)
         total_share_cost = price * shares
 
-        # Insert transaction into database and update user cash
+        # Insert transaction into database
         Transaction.insert(user_id, ticker, "sell", shares, price)
+
+        # Update user cash
         User.update_cash(user_id, total_share_cost, "add")
+
+        # Update user state
         State.update_ticker(user_id, ticker, shares, "sell")
 
         # Show sell popup message
@@ -357,6 +371,23 @@ def sell():
             },
         )
 
+    else:
+        return render_error("Invalid request method", 403)
+
+
+@app.route("/history")
+@login_required
+def history():
+    """Show history of transactions"""
+    if request.method == "POST":
+        return render_error("Invalid request method", 403)
+    elif request.method == "GET":
+        return render_template(
+            "history.html",
+            **{
+                "transactions": Transaction.get_all(session["user_id"]),
+            },
+        )
     else:
         return render_error("Invalid request method", 403)
 

@@ -202,7 +202,27 @@ class Transaction:
             """,
             user_id,
         )
-        return transactions
+
+        formatted_transactions = []
+        for transaction in transactions:
+            formatted_transactions.append(
+                {
+                    "timestamp": transaction["time_stamp"],
+                    "name": transaction["name"],
+                    "ticker": transaction["ticker"],
+                    "price": transaction["price"],
+                    "shares": (
+                        transaction["shares"] * TRANS_TYPES[transaction["trans_type"]]
+                    ),
+                    "total": (
+                        transaction["shares"]
+                        * TRANS_TYPES[transaction["trans_type"]]
+                        * transaction["price"]
+                    ),
+                }
+            )
+
+        return formatted_transactions
 
 
 with open(DATA_DIR / "states.json", mode="r", encoding="utf-8") as f:
@@ -228,8 +248,7 @@ class State:
         """Add a user to the state"""
         STATES[str(user_id)] = {}
 
-        with open("data/states.json", mode="w", encoding="utf-8") as f:
-            dump(STATES, f)
+        State.save()
 
     @staticmethod
     def update_ticker(user_id, ticker, shares, action):
@@ -243,10 +262,14 @@ class State:
 
         STATES[str(user_id)][ticker] += shares * TRANS_TYPES[action]
 
+        State.save()
+        State.refresh()
+
+    @staticmethod
+    def save() -> None:
+        """Save the state"""
         with open("data/states.json", mode="w", encoding="utf-8") as f:
             dump(STATES, f)
-
-        State.refresh()
 
     @staticmethod
     def refresh() -> None:
