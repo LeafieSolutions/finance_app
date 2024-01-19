@@ -307,6 +307,17 @@ class State:
                 ticker,
                 0,
             )
+        
+        if not State.ticker_exists(user_id, ticker):
+            DB.execute(
+                """
+                INSERT INTO states (user_id, comp_ticker, shares)
+                VALUES (?, ?, ?)
+                """,
+                user_id,
+                ticker,
+                0,
+            )
 
         current_shares = State.get_share(user_id, ticker)
 
