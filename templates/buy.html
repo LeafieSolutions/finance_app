@@ -25,7 +25,7 @@ Buy
         </div>
         <div>
             <button type="submit"
-                class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24">Buy</button>
+                class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Buy</button>
         </div>
         <input class="hidden" id="allNames" value="{{company_names}}">
     </form>
@@ -61,8 +61,11 @@ Buy
             for (let i = 0; i < 5; i++) {
                 let button = createElement("button");
                 button.setAttribute('type', 'button');
-                // button.classList.add('border', 'border-slate-500', 'w-full')
                 button.textContent = matched[i];
+                button.addEventListener('click', () => {
+                    company_name.value = matched[i];
+                    company_name.textContent = matched[i];
+                });
                 listNames.appendChild(button);
             }
         }
