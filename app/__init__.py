@@ -82,9 +82,6 @@ def login_required(func):
 def login():
     """Log user in"""
 
-    # Forget any user_id
-    session.clear()
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         username = request.form.get("username")
@@ -112,6 +109,8 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     elif request.method == "GET":
+        if session.get("user_id") is not None:
+            return redirect("/")
         return render_template("login.html")
 
     else:
@@ -150,6 +149,8 @@ def register():
         return redirect("/")
 
     elif request.method == "GET":
+        if session.get("user_id") is not None:
+            return redirect("/")
         return render_template("register.html")
 
     else:
