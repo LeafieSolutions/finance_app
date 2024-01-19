@@ -205,6 +205,8 @@ def quote():
 
     if request.method == "POST":
         company_name = request.form.get("company_name")
+        
+        print(company_name)
 
         # Ensure company name is provided
         if not company_name:

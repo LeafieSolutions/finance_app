@@ -18,7 +18,9 @@
 
 - Clone [the repo](https://github.com/LeafieSolutions/finance_app): `git clone https://github.com/LeafieSolutions/finance_app`
 
-- Create a virtual environment and activate it: `virtualenv ".env_$(basename $PWD)"; source ".env_$(basename $PWD)"/bin/activate`
+- Create a virtual environment: `virtualenv ".env_$(basename $PWD)"`
+
+- Activate it: `source ".env_$(basename $PWD)/bin/activate"`
 
 - Install dependencies: `pip3 install -r requirements.txt`
 
