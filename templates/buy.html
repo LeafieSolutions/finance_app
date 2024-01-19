@@ -84,6 +84,11 @@ Buy
             });
             if (matched.length > 0) {
                 displayNames();
+            } else {
+                while (listNames.firstChild) {
+                    listNames.removeChild(listNames.firstChild);
+                }
+
             }
         }
 
