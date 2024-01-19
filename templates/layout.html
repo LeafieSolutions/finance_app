@@ -11,19 +11,19 @@
     <title>Stock Portfolio Manager: {% block title %}{% endblock %}</title>
 </head>
 
-<body>
+<body class="min-h-screen relative bg-white">
     <nav class="bg-black p-2">
         {% if session["user_id"] %}
-        <div class="flex justify-between items-center">
-            <a href="/">
-                <img src="../assets/icons/favicon.svg" alt="logo" class="logo">
+        <div class="flex justify-around items-center w-full">
+            <a href="/" class="flex flex-wrap items-center overflow-auto">
+                <img src="../assets/icons/favicon.svg" alt="logo" class="w-8 h-12 md:w-12 md:h-16">
                 <p class="text-white text-lg sm:text-xl">Stock Portfolio Manager</p>
             </a>
             <a href="/quote" class="text-slate-200">quote</a>
             <a href="/sell" class="text-slate-200">Sell</a>
             <a href="/buy" class="text-slate-200">Buy</a>
             <a href="/history" class="text-slate-200">History</a>
-            <div class="flex gap-4">
+            <div class="flex gap-4 text-white">
                 <img src="../assets/icons/user.svg" alt="user">
                 <a href="/profile">Edit Profile</a>
                 <a href="/login">Log Out</a>
@@ -37,7 +37,7 @@
         {% endif %}
     </nav>
 
-    <main class="bg-white">
+    <main>
         {% block main %}{% endblock %}
     </main>
 

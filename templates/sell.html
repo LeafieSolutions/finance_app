@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Sell
+{% endblock %}
+
+{% block main %}
+<div class="w-full flex flex-col items-center gap-10">
+    <p class="text-center font-bold text-xl">Sell Shares</p>
+    <form action="/sell" method="post" class="flex flex-col justify-center items-center gap-10 w-2/3">
+        <div class="w-full">
+            <label for="company_name" class="block text-slate-500 mb-2">Company</label>
+            <input type="text" name="company_name" id="company_name" placeholder="Input company name"
+                class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
+                required>
+        </div>
+        <div class="w-full">
+            <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
+            <input type="number" name="shares" id="shares" placeholder="Input number of shares"
+                class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
+                required>
+        </div>
+        <div>
+            <button type="submit"
+                class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24">Sell</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

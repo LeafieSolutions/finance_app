@@ -1,25 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Home
+Buy
 {% endblock %}
 
 {% block main %}
-<div class="w-3/4 p-4 p-10 flex flex-col w-full gap-10">
-    <div class="flex justify-around items-center text-black">
-        <div>
-            <p class="underline text-xl">Cash Total</p>
-            <p class="text-lg sm:text-xl font-bold">$ {{ cash }}</p>
-        </div>
-        <div>
-            <p class="underline text-xl">Stocks Total</p>
-            <p class="text-lg sm:text-xl font-bold">$2, 859</p>
-        </div>
-        <div>
-            <p class="underline text-xl">Portfolio Total</p>
-            <p class="text-lg sm:text-xl font-bold">$7, 141</p>
-        </div>
-    </div>
+<div class="w-full flex flex-col items-center gap-10">
+    <p class="text-center font-bold text-xl">Transaction history</p>
     <table>
         <thead>
             <tr>
