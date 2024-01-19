@@ -1,25 +1,31 @@
 # finance_app
-## Finance app for stock portofolio management
+## Finance app for stock portfolio management
 
 ## Table of Contents
+1. [Setup](#setup)
 1. [Usage](#usage)
 1. [Contribution](#contribution)
 
-## Usage
+## Setup
 - Prerequisites
 
     Prerequisite | Installation
     ---- | ----
     python3 | Install python depending on your OS
     pip3 | `wget https://bootstrap.pypi.io/get-pip.py; python3 get-pip.py; rm get-pip.py`
-    virtualenv | `python3 -m pip install virtualenv`
+    virtualenv | `pip3 install virtualenv`
 
 
-- Clone [the repo](https://github.com/LeafieSolutions/finance_app)
+- Clone [the repo](https://github.com/LeafieSolutions/finance_app): `git clone https://github.com/LeafieSolutions/finance_app`
 
 - Create a virtual environment and activate it: `virtualenv ".env_$(basename $PWD)"; source ".env_$(basename $PWD)"/bin/activate`
 
 - Install dependencies: `pip3 install -r requirements.txt`
+
+## Usage
+- Setup the project as indicated [the setup section](#setup) of this README
+
+- Run the following in the terminal
 
 - Create an **Individual Account** with a **free plan** at https://iexcloud.io/cloud-login#/register/
 
@@ -41,20 +47,7 @@ where value is that (pasted) value, without any space immediately before or afte
 ## Contribution
 
 ### Backend
-- Prerequisites
-
-    Prerequisite | Installation
-    ---- | ----
-    python3 | Install python depending on your OS
-    pip3 | `wget https://bootstrap.pypi.io/get-pip.py; python3 get-pip.py; rm get-pip.py`
-    virtualenv | `pip3 install virtualenv`
-
-
-- Clone [the repo](https://github.com/LeafieSolutions/finance_app): `git clone https://github.com/LeafieSolutions/finance_app`
-
-- Create a virtual environment and activate it: `virtualenv ".env_$(basename $PWD)"; source ".env_$(basename $PWD)"/bin/activate`
-
-- Install dependencies: `pip3 install -r requirements.txt`
+- Setup the project as indicated [the setup section](#setup) of this README
 
 - Make you contribution
 

@@ -2,17 +2,18 @@
 
 
 # Built-in imports
+from functools import wraps
 import os
 
 # PIP imports
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
 # Second party imports
 from .helpers import (
-    login_required,
     render_error,
+    render_template,
     usd,
     validate_cash_value,
 )
@@ -59,6 +60,22 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
+
+
+def login_required(func):
+    """
+    Decorate routes to require login.
+
+    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
+    """
+
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return func(*args, **kwargs)
+
+    return decorated_function
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -129,9 +146,6 @@ def register():
         # Remember which user has logged in
         session["user_id"] = User.get_id(username)
 
-        # Add user to state logs
-        State.add_user(session["user_id"])
-
         # Redirect user to home page
         return redirect("/")
 
@@ -163,30 +177,18 @@ def homepage():
         return render_error("Invalid request method", 403)
     elif request.method == "GET":
         user_id = session["user_id"]
+        user_state = State.get_user_state(user_id)
 
-        formatted_states = []
         stocks_total = 0
-        for state in State.get_user_state(user_id):
-            price = Company.get_share_price(state["ticker"])
-            total = price * state["shares"]
-
-            formatted_states += [
-                {
-                    "name": Company.get_name(state["ticker"]),
-                    "ticker": state["ticker"],
-                    "price": price,
-                    "shares": state["shares"],
-                    "total": total,
-                }
-            ]
-            stocks_total += total
+        for state in user_state:
+            stocks_total += state["total"]
 
         cash = User.get_cash(user_id)
 
         return render_template(
             "homepage.html",
             **{
-                "summary": formatted_states,
+                "summary": user_state,
                 "cash": cash,
                 "stocks_total": stocks_total,
                 "portfolio_total": stocks_total + cash,
@@ -280,7 +282,7 @@ def buy():
         User.update_cash(user_id, total_share_cost, "remove")
 
         # Update user state
-        State.update_ticker(user_id, ticker, shares, "buy")
+        State.update(user_id, ticker, shares, "buy")
 
         # Show buy popup message
         return render_template(
@@ -333,7 +335,7 @@ def sell():
             return render_error("Ticker symbol doesn't exist", 403)
 
         # Ensure user has shares in the company
-        if ticker not in State.get_user_state(user_id):
+        if not State.ticker_exists(user_id, ticker):
             return render_error("You don't have any shares in this company", 403)
 
         # Ensure user has enough shares
@@ -351,7 +353,7 @@ def sell():
         User.update_cash(user_id, total_share_cost, "add")
 
         # Update user state
-        State.update_ticker(user_id, ticker, shares, "sell")
+        State.update(user_id, ticker, shares, "sell")
 
         # Show sell popup message
         return render_template(
@@ -367,7 +369,7 @@ def sell():
         return render_template(
             "sell.html",
             **{
-                "company_names": State.get_user_state(user_id).keys(),
+                "company_names": State.get_companies(user_id),
             },
         )
 

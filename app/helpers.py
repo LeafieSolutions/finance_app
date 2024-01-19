@@ -1,11 +1,8 @@
 """Helper functions"""
 
 
-# Built-in imports
-from functools import wraps
-
 # PIP imports
-from flask import redirect, render_template, session
+from flask import render_template
 
 
 def render_error(message, code=400):
@@ -31,22 +28,6 @@ def render_error(message, code=400):
         return s
 
     return render_template("apology.html", top=code, bottom=escape(message)), code
-
-
-def login_required(func):
-    """
-    Decorate routes to require login.
-
-    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
-    """
-
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect("/login")
-        return func(*args, **kwargs)
-
-    return decorated_function
 
 
 def usd(value):

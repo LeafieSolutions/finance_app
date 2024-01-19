@@ -122,7 +122,7 @@ class Company:
     @staticmethod
     def ticker_exists(ticker):
         """Check if ticker already exists in the database"""
-        ticker = DB.execute("SELECT * FROM companies WHERE ticker = ?", ticker)
+        ticker = DB.execute("SELECT ticker FROM companies WHERE ticker = ?", ticker)
         return len(ticker) == 1
 
     @staticmethod
@@ -225,55 +225,99 @@ class Transaction:
         return formatted_transactions
 
 
-with open(DATA_DIR / "states.json", mode="r", encoding="utf-8") as f:
-    STATES = load(f)
-
-
 class State:
     """Class to handle state data"""
 
     @staticmethod
     def get_share(user_id, ticker):
         """Get the state of a user"""
-        return STATES[str(user_id)][ticker]
+        return DB.execute(
+            """
+            SELECT shares FROM states
+            WHERE user_id = ? AND comp_ticker = ?
+            """,
+            user_id,
+            ticker,
+        )[0]["shares"]
 
     @staticmethod
-    def get_user_state(user_id) -> dict:
+    def get_user_state(user_id) -> list:
         """Get the state of a user"""
 
-        return STATES[str(user_id)]
+        ticker_states = DB.execute(
+            """
+            SELECT comp_ticker, shares FROM states
+            WHERE user_id = ?
+            """,
+            user_id,
+        )
+
+        formatted_states = []
+        for ticker_state in ticker_states:
+            price = Company.get_share_price(ticker_state["comp_ticker"])
+            formatted_states.append(
+                {
+                    "name": Company.get_name(ticker_state["comp_ticker"]),
+                    "ticker": ticker_state["comp_ticker"],
+                    "price": price,
+                    "shares": ticker_state["shares"],
+                    "total": ticker_state["shares"] * price,
+                }
+            )
+
+        return formatted_states
 
     @staticmethod
-    def add_user(user_id) -> None:
-        """Add a user to the state"""
-        STATES[str(user_id)] = {}
-
-        State.save()
+    def user_exists(user_id) -> bool:
+        """Check if user exists in the state"""
+        user = DB.execute("""SELECT user_id FROM states WHERE user_id = ?""", user_id)
+        return len(user) == 1
 
     @staticmethod
-    def update_ticker(user_id, ticker, shares, action):
+    def ticker_exists(user_id, ticker) -> bool:
+        """Check if ticker exists in the state"""
+        ticker = DB.execute(
+            """
+            SELECT comp_ticker FROM states
+            WHERE user_id = ? AND comp_ticker = ?
+            """,
+            user_id,
+            ticker,
+        )
+        return len(ticker) == 1
+
+    @staticmethod
+    def get_companies(user_id):
+        """Get all companies of a user"""
+        user_state = State.get_user_state(user_id)
+        return [state["name"] for state in user_state]
+
+    @staticmethod
+    def update(user_id, ticker, shares, action):
         """Update the state of a user"""
 
-        if user_id not in STATES:
-            STATES[str(user_id)] = {}
+        if not State.user_exists(user_id):
+            DB.execute(
+                """
+                INSERT INTO states (user_id, comp_ticker, shares)
+                VALUES (?, ?, ?)
+                """,
+                user_id,
+                ticker,
+                0,
+            )
 
-        if ticker not in STATES[user_id]:
-            STATES[str(user_id)][ticker] = 0
+        current_shares = State.get_share(user_id, ticker)
 
-        STATES[str(user_id)][ticker] += shares * TRANS_TYPES[action]
+        shares = TRANS_TYPES[action] * shares
+        shares += current_shares
 
-        State.save()
-        State.refresh()
-
-    @staticmethod
-    def save() -> None:
-        """Save the state"""
-        with open("data/states.json", mode="w", encoding="utf-8") as f:
-            dump(STATES, f)
-
-    @staticmethod
-    def refresh() -> None:
-        """Refresh data of states"""
-
-        with open("data/states.json", mode="r", encoding="utf-8") as f:
-            STATES = load(f)
+        DB.execute(
+            """
+            UPDATE states SET shares = ?
+            WHERE user_id = ? AND comp_ticker = ?
+            """,
+            shares,
+            user_id,
+            ticker,
+        )
