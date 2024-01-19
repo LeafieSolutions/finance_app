@@ -249,7 +249,7 @@ def buy():
     if request.method == "POST":
         user_id = session["user_id"]
         company_name = request.form.get("company_name")
-        shares = request.form.get("shares")
+        shares = int(request.form.get("shares"))
 
         # Ensure values are provided
         if not company_name:
@@ -260,8 +260,7 @@ def buy():
         ticker = Company.get_ticker(company_name)
 
         # Ensure values are valid
-        if not validate_cash_value(shares):
-            return validate_cash_value(shares)
+        validate_cash_value(str(shares))
 
         if not Company.ticker_exists(ticker):
             return render_error("Ticker symbol doesn't exist", 403)
@@ -294,7 +293,6 @@ def buy():
         )
 
     elif request.method == "GET":
-        # select names column from users table
         return render_template(
             "buy.html",
             **{
@@ -328,8 +326,7 @@ def sell():
         ticker = Company.get_ticker(company_name)
 
         # Ensure values are valid
-        if not validate_cash_value(shares):
-            return validate_cash_value(shares)
+        validate_cash_value(shares)
 
         if not Company.ticker_exists(ticker):
             return render_error("Ticker symbol doesn't exist", 403)

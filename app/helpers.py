@@ -40,5 +40,5 @@ def validate_cash_value(value):
     if not value:
         return render_error("Please provide cash value", 403)
 
-    if not value.isdigit() and (int(value) < 0):
+    if (not value.isdigit()) or (int(value) < 0):
         return render_error("Value must be an integer more than zero", 403)
