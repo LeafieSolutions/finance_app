@@ -57,7 +57,6 @@ Quote
                 button.textContent = matched[i];
                 button.addEventListener('click', () => {
                     company_name.value = matched[i];
-                    company_name.textContent = matched[i];
                     while (listNames.firstChild) {
                         listNames.removeChild(listNames.firstChild);
                     }
