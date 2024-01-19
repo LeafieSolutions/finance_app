@@ -21,15 +21,13 @@ Buy
             <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
             <input type="number" name="shares" id="shares" placeholder="Input number of shares"
                 class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                required>
+                required min="1">
         </div>
         <div>
             <button type="submit"
                 class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Buy</button>
         </div>
-        <input class="hidden" id="allNames" value="{{company_names}}">
     </form>
-    <p></p>
     <script>
         let company_name = document.querySelector("#company_name");
         let listNames = document.querySelector("#displayNames");
@@ -65,6 +63,9 @@ Buy
                 button.addEventListener('click', () => {
                     company_name.value = matched[i];
                     company_name.textContent = matched[i];
+                    while (listNames.firstChild) {
+                        listNames.removeChild(listNames.firstChild);
+                    }
                 });
                 listNames.appendChild(button);
             }

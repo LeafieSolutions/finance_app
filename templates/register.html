@@ -36,8 +36,8 @@ Register
             <p>Already have an account? <a href="/login" class="text-purple-800 underline font-bold">Login</a></p>
         </div>
         <script>
-            const password = document.getElementById("password");
-            const confirm_password = document.getElementById("confirm_password");
+            const password = document.querySelector("#password");
+            const confirm_password = document.querySelector("#confirm_password");
 
             function validatePassword() {
                 if (password.value !== confirm_password.value) {
