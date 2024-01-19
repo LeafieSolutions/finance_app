@@ -36,7 +36,7 @@ CREATE TABLE transactions (
 CREATE TABLE states (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     user_id INTEGER NOT NULL,
-    comp_ticker TEXT NOT NULL UNIQUE,
+    comp_ticker TEXT NOT NULL,
     shares INTEGER NOT NULL DEFAULT 0,
 
     FOREIGN KEY(user_id) REFERENCES users(id),
