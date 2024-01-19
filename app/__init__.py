@@ -121,9 +121,6 @@ def login():
 def register():
     """Register user"""
 
-    # Forget any user_id
-    session.clear()
-
     if request.method == "POST":
         username, password, confirmation = (
             request.form.get("username"),
@@ -149,6 +146,7 @@ def register():
         return redirect("/")
 
     elif request.method == "GET":
+        print("SESSION", session.get("user_id"))
         if session.get("user_id") is not None:
             return redirect("/")
         return render_template("register.html")
@@ -165,7 +163,7 @@ def logout():
     session.clear()
 
     # Redirect user to login form
-    return redirect("/")
+    return redirect("/login")
 
 
 @app.route("/home")
@@ -206,7 +204,7 @@ def quote():
 
     if request.method == "POST":
         company_name = request.form.get("company_name")
-        
+
         print(company_name)
 
         # Ensure company name is provided
