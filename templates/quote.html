@@ -5,8 +5,9 @@ Quote
 {% endblock %}
 
 {% block main %}
-<div class="w-full flex flex-col items-center gap-10">
+<div class="w-full flex flex-col items-center gap-10 p-2 absolute">
     <p class="text-center font-bold text-xl">Quote Share Price</p>
+    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
     <form id="quoteForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
         {% if company_name %}
         <p>{{ company_name }}</p>

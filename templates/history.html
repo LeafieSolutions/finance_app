@@ -5,28 +5,29 @@ Buy
 {% endblock %}
 
 {% block main %}
-<div class="w-full flex flex-col items-center gap-10">
+<div class="w-full flex flex-col items-center gap-10 p-2 absolute">
     <p class="text-center font-bold text-xl">Transaction history</p>
-    <table>
+    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
+    <table class="w-5/6">
         <thead>
             <tr>
-                <th>Time</th>
-                <th>Company</th>
-                <th>Ticker Symbol</th>
-                <th>Share Price</th>
-                <th>No. of shares</th>
-                <th>Total</th>
+                <th class="text-start">Time</th>
+                <th class="text-start">Company</th>
+                <th class="text-start">Ticker Symbol</th>
+                <th class="text-end">Share Price</th>
+                <th class="text-end">No. of shares</th>
+                <th class="text-end">Total</th>
             </tr>
         </thead>
         <tbody>
             {% for transaction in transactions %}
             <tr>
-                <td>{{ transaction.timestamp }}</td>
-                <td>{{ transaction.name }}</td>
-                <td>{{ transaction.ticker }}</td>
-                <td>{{ transaction.price }}</td>
-                <td>{{ transaction.shares }}</td>
-                <td>{{ transaction.total }}</td>
+                <td class="text-start">{{ transaction.timestamp }}</td>
+                <td class="text-start">{{ transaction.name }}</td>
+                <td class="text-start">{{ transaction.ticker }}</td>
+                <td class="text-end">{{ transaction.price }}</td>
+                <td class="text-end">{{ transaction.shares }}</td>
+                <td class="text-end">{{ transaction.total }}</td>
             </tr>
             {% endfor %}
         </tbody>

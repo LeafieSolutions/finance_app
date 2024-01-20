@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block main %}
+<div class="w-full absolute">
+    <p class="text-black font-bold text-xl text-center">My Profile</p>
+    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
+    <form action="/profile" method="post" class="flex items-center justify-center p-12" autocomplete="false">
+        <div class="p-8 rounded-2xl flex flex-col gap-8 w-3/4 sm:w-1/3">
+            <div>
+                <label for="username" class="block text-slate-500">Username</label>
+                <input type="text" name="username" id="username" placeholder="Enter your username" autocomplete="off"
+                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
+                    required pattern="[a-zA-Z][a-z_A-Z0-9]+" value="{{username}}">
+            </div>
+            <div>
+                <label for="old_password" class="block text-slate-500">Old Password</label>
+                <input type="old_password" name="old_password" id="old_password" placeholder="Enter password"
+                    autocomplete="off"
+                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
+                    required>
+            </div>
+            <div>
+                <label for="new_password" class="block text-slate-500">New Password</label>
+                <input type="password" name="new_password" id="new_password" placeholder="Enter password" required
+                    autocomplete="off"
+                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+            </div>
+            <div>
+                <label for="confirm_password" class="block text-slate-500">Confirm password</label>
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password"
+                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
+                    required autocomplete="off">
+            </div>
+            <div class="flex items-center justify-center">
+                <button type="button" id="submitButton"
+                    class="bg-purple-900 font-bold text-xl text-white p-2 px-12 rounded-2xl">Update</button>
+            </div>
+            <script>
+                const old_password = document.querySelector("#old_password");
+                const username = document.querySelector("#username");
+                const new_password = document.querySelector("#new_password");
+                const confirm_password = document.querySelector("#confirm_password");
+                const submitButton = document.querySelector("#submitButton");
+            </script>
+        </div>
+    </form>
+</div>
+{% endblock %}
