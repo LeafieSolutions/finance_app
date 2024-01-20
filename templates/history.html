@@ -10,6 +10,7 @@ Buy
     <table>
         <thead>
             <tr>
+                <th>Time</th>
                 <th>Company</th>
                 <th>Ticker Symbol</th>
                 <th>Share Price</th>
@@ -18,20 +19,17 @@ Buy
             </tr>
         </thead>
         <tbody>
+            {% for transaction in transactions %}
             <tr>
-                <td>Apple Inc</td>
-                <td>AAPL</td>
-                <td>$123</td>
-                <td>3</td>
-                <td>$369</td>
+                <td>{{ transaction.timestamp }}</td>
+                <td>{{ transaction.name }}</td>
+                <td>{{ transaction.ticker }}</td>
+                <td>{{ transaction.price }}</td>
+                <td>{{ transaction.shares }}</td>
+                <td>{{ transaction.total }}</td>
             </tr>
+            {% endfor %}
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4" class="text-right font-bold">Shares Total</td>
-                <td>$369</td>
-            </tr>
-        </tfoot>
     </table>
 </div>
 {% endblock %}
