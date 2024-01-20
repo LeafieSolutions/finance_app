@@ -6,12 +6,13 @@ from functools import wraps
 import os
 
 # PIP imports
-from flask import Flask, redirect, request, session
+from flask import Flask, jsonify, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
 # Second party imports
 from .helpers import (
+    format_number,
     render_error,
     render_template,
     usd,
@@ -188,11 +189,23 @@ def homepage():
             "homepage.html",
             **{
                 "summary": user_state,
-                "cash": cash,
-                "stocks_total": stocks_total,
-                "portfolio_total": stocks_total + cash,
+                "cash": format_number(cash),
+                "stocks_total": format_number(stocks_total),
+                "portfolio_total": format_number(stocks_total + cash),
             },
         )
+    else:
+        return render_error("Invalid request method", 403)
+
+
+@app.route("/companies")
+@login_required
+def get_company_names():
+    """Get company names"""
+    if request.method == "POST":
+        return render_error("Invalid request method", 403)
+    elif request.method == "GET":
+        return jsonify(COMPANY_NAMES)
     else:
         return render_error("Invalid request method", 403)
 
