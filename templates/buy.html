@@ -7,7 +7,7 @@ Buy
 {% block main %}
 <div class="w-full flex flex-col items-center gap-10">
     <p class="text-center font-bold text-xl">Buy Shares</p>
-    <form class="flex flex-col justify-center items-center gap-10 w-2/3">
+    <form class="flex flex-col justify-center items-center gap-10 w-2/3" id="quoteForm">
         <div class="w-full relative">
             <label for="company_name" class="block text-slate-500 mb-2">Company</label>
             <input type="text" name="company_name" id="company_name" placeholder="Input company name"
@@ -27,7 +27,7 @@ Buy
                 required min="1" autocomplete="off">
         </div>
         <div>
-            <button id="submitButton"
+            <button id="submitButton" type="button"
                 class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Buy</button>
         </div>
     </form>
