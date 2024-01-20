@@ -85,7 +85,7 @@ class User:
         )
 
     @staticmethod
-    def get_cash(user_id: str):
+    def get_cash(user_id: int):
         """Get the cash value of a user"""
         cash = DB.execute("SELECT cash FROM users WHERE id = ?", user_id)[0]["cash"]
         return cash
@@ -309,7 +309,7 @@ class State:
                 ticker,
                 0,
             )
-        
+
         if not State.ticker_exists(user_id, ticker):
             DB.execute(
                 """
