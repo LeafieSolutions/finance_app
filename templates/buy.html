@@ -7,49 +7,37 @@ Buy
 {% block main %}
 <div class="w-full flex flex-col items-center gap-10">
     <p class="text-center font-bold text-xl">Buy Shares</p>
-    <form action="/buy" method="post" class="flex flex-col justify-center items-center gap-10 w-2/3">
+    <form class="flex flex-col justify-center items-center gap-10 w-2/3">
         <div class="w-full relative">
             <label for="company_name" class="block text-slate-500 mb-2">Company</label>
             <input type="text" name="company_name" id="company_name" placeholder="Input company name"
                 class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                required>
+                required autocomplete="off">
             <div id="displayNames"
                 class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
+            </div>
+            <div id="displayError" class="hidden">
+                <p class="text-red-400">Please enter a valid company name</p>
             </div>
         </div>
         <div class="w-full">
             <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
             <input type="number" name="shares" id="shares" placeholder="Input number of shares"
                 class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                required min="1">
+                required min="1" autocomplete="off">
         </div>
         <div>
-            <button type="submit"
+            <button id="submitButton"
                 class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Buy</button>
         </div>
     </form>
     <script>
         let company_name = document.querySelector("#company_name");
         let listNames = document.querySelector("#displayNames");
+        let submitButton = document.querySelector("#submitButton");
+        let quoteForm = document.querySelector("#quoteForm");
         const createElement = (element) => document.createElement(element);
-        let names = [];
         let matched = [];
-        apiUrl = "https://api.iex.cloud/v1/data/core/REF_DATA?token=pk_71f22086bccd4942b0ad62e770bec9d6";
-
-        async function getNames() {
-            let response = await fetch(apiUrl);
-            let data = await response.json();
-            let names = createNames(data);
-            checkNames(names);
-        }
-
-        getNames();
-        function createNames(data) {
-            for (let i = 0; i < data.length; i++) {
-                names.push(data[i].name);
-            }
-            return names;
-        }
 
 
         function displayNames() {
@@ -92,9 +80,35 @@ Buy
             }
         }
 
-        company_name.addEventListener('keyup', () => {
+        company_name.addEventListener('keyup', (event) => {
+            console.log(event.key);
+            if (event.key === "Backspace" || event.key === "Delete") {
+                while (listNames.firstChild) {
+                    listNames.removeChild(listNames.firstChild);
+                }
+            }
             if (names) {
                 checkNames();
+            }
+        });
+
+        submitButton.addEventListener('click', () => {
+            let validName = false;
+            names.forEach(name => {
+                if (name === company_name.value) {
+                    validName = true;
+                    return;
+                }
+            })
+            if (validName) {
+                quoteForm.setAttribute('action', '/buy');
+                quoteForm.setAttribute('method', 'POST');
+                submitButton.setAttribute('type', 'submit');
+            } else {
+                while (listNames.firstChild) {
+                    listNames.removeChild(listNames.firstChild);
+                }
+                displayError.classList.remove("hidden");
             }
         })
     </script>
