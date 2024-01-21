@@ -105,7 +105,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- ### /register/create/?username=<string:username>&password=<string:password>
+- ### /register/create?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
@@ -129,7 +129,7 @@ where value is that (pasted) value, without any space immediately before or afte
             "reason": "null password",
         }
         ```
-        
+
         - username already exists
         ```json
         {
@@ -183,12 +183,36 @@ where value is that (pasted) value, without any space immediately before or afte
         homepage.html
         ```
 
-- ### /api/quote/<string:company_name>
+- ### /api/quote/get?company_name=<string:company_name>
     - GET
+        - successful
         ```json
         {
+            "flag": "success",
+            "ticker": "AAPL",
+            "name": "Apple Inc",
             "price": 203.43
         }
+        ```
+        - company name not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null company_name",
+        }
+        ```
+        - company name does not exist
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid company_name",
+        }
+        ```
+        
+- ### /quote/
+    - GET
+        ```
+        quote.html
         ```
 
 

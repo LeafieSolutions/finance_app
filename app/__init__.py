@@ -270,7 +270,7 @@ def homepage():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/api/companies")
+@app.route("/api/company_names")
 @login_required
 def get_company_names():
     """Get company names"""
@@ -280,25 +280,44 @@ def get_company_names():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/api/quote/<string:company_name>")
+@app.route("/api/quote/get/")
 @login_required
-def get_quote(company_name):
+def get_quote():
     """Get stock quote"""
     if request.method == "GET":
+        company_name = request.args.get("company_name")
+
         # Ensure company name is provided
         if not company_name:
-            return render_error("Please provide company name", 403)
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null company_name",
+                }
+            )
 
         # Ensure company name is valid
         if not Company.exists(company_name):
-            return render_error("Company name doesn't exist", 403)
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid company_name",
+                }
+            )
 
         ticker = Company.get_ticker(company_name)
 
         # Get share price
         price = Company.get_share_price(ticker)
 
-        return jsonify({"price": price})
+        return jsonify(
+            {
+                "flag": "success",
+                "ticker": ticker,
+                "name": company_name,
+                "price": price,
+            }
+        )
 
     else:
         return render_error("Invalid request method", 403)

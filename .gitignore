@@ -4,6 +4,9 @@
 # Cache files
 *cache*
 
+# Database
+final.db
+
 # FLask session
 *flask_session*
 
