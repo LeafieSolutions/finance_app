@@ -6,6 +6,7 @@
 
 # Databases
 *.db
+finance.db
 
 # FLask session
 *flask_session*
