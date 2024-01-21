@@ -48,8 +48,11 @@ where value is that (pasted) value, without any space immediately before or afte
 
 ## Contribution
 
-### Backend
 - Setup the project as indicated [the setup section](#setup) of this README
+
+- To run the server in development mode run: `flask --app app --debug run`
+
+### Backend
 
 - Make you contribution
 
