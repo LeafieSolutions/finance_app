@@ -104,6 +104,17 @@ Quote
                 errorMessage.classList.add("text-red-500");
                 listNames.appendChild(errorMessage);
             }
+
+            async function getQuoteResponse() {
+                names = await fetch('/data/quote/');
+                names = await names.json();
+
+                console.log(names);
+            }
+
+            getQuoteResponse();
+
+
         })
     </script>
 </div>

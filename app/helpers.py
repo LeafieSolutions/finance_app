@@ -1,6 +1,9 @@
 """Helper functions"""
 
 
+# Built-in imports
+from re import match as regex_match
+
 # PIP imports
 from flask import render_template
 
@@ -47,3 +50,10 @@ def validate_cash_value(value):
 
     if (not value.isdigit()) or (int(value) < 0):
         return render_error("Value must be an integer more than zero", 403)
+
+
+def validate_username(username):
+    """Parse username"""
+
+    if not regex_match(r"^[a-zA-Z][a-z_A-Z0-9]{3,}$", username):
+        return render_error("Invalid username", 403)

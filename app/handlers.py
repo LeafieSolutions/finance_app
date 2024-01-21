@@ -75,11 +75,19 @@ class User:
         )
 
     @staticmethod
-    def update_info(user_id: int, username: str, password_hash: str):
-        """Update user info in the database"""
+    def update_username(user_id: int, username: str):
+        """Update user username in the database"""
         DB.execute(
-            "UPDATE users SET username = ?, hash = ? WHERE id = ?",
+            "UPDATE users SET username = ? WHERE id = ?",
             username,
+            user_id,
+        )
+
+    @staticmethod
+    def update_password(user_id: int, password_hash: str):
+        """Update user password in the database"""
+        DB.execute(
+            "UPDATE users SET hash = ? WHERE id = ?",
             password_hash,
             user_id,
         )
