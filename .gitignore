@@ -4,8 +4,8 @@
 # Cache files
 *cache*
 
-# Database
-final.db
+# Databases
+*.db
 
 # FLask session
 *flask_session*
@@ -27,6 +27,3 @@ final.db
 
 # export api keys
 run
-
-# test db
-data/finance.db
