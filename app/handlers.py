@@ -101,20 +101,19 @@ class User:
     @staticmethod
     def update_cash(user_id, cash_change, action):
         """Update user cash"""
-        if action == "remove":
-            DB.execute(
-                "UPDATE users SET cash = ? WHERE id = ?",
-                User.get_cash(user_id) - cash_change,
-                user_id,
-            )
-        elif action == "add":
-            DB.execute(
-                "UPDATE users SET cash = ? WHERE id = ?",
-                User.get_cash(user_id) + cash_change,
-                user_id,
-            )
-        else:
-            raise RuntimeError(f"Invalid action: '{action}'")
+
+        cash_types = {
+            "buy": -1,
+            "sell": 1,
+        }
+
+        cash_change *= cash_types[action]
+
+        DB.execute(
+            "UPDATE users SET cash = ? WHERE id = ?",
+            User.get_cash(user_id) + cash_change,
+            user_id,
+        )
 
     @staticmethod
     def get_username(user_id):
@@ -299,7 +298,13 @@ class State:
     def get_companies(user_id):
         """Get all companies of a user"""
         user_state = State.get_user_state(user_id)
-        return [state["name"] for state in user_state]
+
+        formatted_states = []
+        for state in user_state:
+            if state["name"] not in formatted_states:
+                formatted_states.append(state["name"])
+
+        return formatted_states
 
     @staticmethod
     def update(user_id, ticker, shares, action):

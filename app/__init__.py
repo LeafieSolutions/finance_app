@@ -138,7 +138,7 @@ def login_authenticate():
 
 
 @app.route("/login", methods=["GET"])
-def login():
+def render_login_page():
     """Log user in"""
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -154,7 +154,7 @@ def login():
 
 
 @app.route("/register/create")
-def register_create():
+def register_user():
     """Create user"""
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -210,7 +210,7 @@ def register_create():
 
 
 @app.route("/register", methods=["GET"])
-def register():
+def render_register_page():
     """Register user"""
 
     if request.method == "GET":
@@ -223,7 +223,7 @@ def register():
 
 
 @app.route("/logout")
-def logout():
+def logout_user():
     """Log user out"""
 
     # Forget any user_id
@@ -235,7 +235,7 @@ def logout():
 
 @app.route("/api/user/summary")
 @login_required
-def get_summary():
+def get_user_summary():
     """Get user summary"""
     if request.method == "GET":
         user_state = State.get_user_state(session["user_id"])
@@ -261,7 +261,7 @@ def get_summary():
 @app.route("/home")
 @app.route("/")
 @login_required
-def homepage():
+def render_home_page():
     """Show portfolio of stocks"""
 
     if request.method == "GET":
@@ -282,7 +282,7 @@ def get_company_names():
 
 @app.route("/api/quote/get/")
 @login_required
-def get_quote():
+def get_stock_quote():
     """Get stock quote"""
     if request.method == "GET":
         company_name = request.args.get("company_name")
@@ -325,7 +325,7 @@ def get_quote():
 
 @app.route("/quote", methods=["GET"])
 @login_required
-def quote():
+def render_quote_page():
     """Get stock quote."""
 
     if request.method == "GET":
@@ -336,25 +336,48 @@ def quote():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/buy/<string:company_name>/<int:shares>")
+@app.route("/buy/purchase")
 @login_required
-def get_buy_info(company_name, shares):
+def buy_stock():
     """Get buy info"""
 
     if request.method == "GET":
+        company_name = request.args.get("company_name")
+        shares = request.args.get("shares", type=int)
+
         # Ensure values are provided
         if not company_name:
-            return render_error("Please provide company name", 403)
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null company_name",
+                }
+            )
         if not shares:
-            return render_error("Please provide number of shares", 403)
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null shares",
+                }
+            )
+
+        if shares <= 0 or not isinstance(shares, int):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid shares",
+                }
+            )
+
+        if not Company.exists(company_name):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid company_name",
+                }
+            )
 
         ticker = Company.get_ticker(company_name)
-
-        # Ensure values are valid
-        validate_cash_value(str(shares))
-
-        if not Company.ticker_exists(ticker):
-            return render_error("Ticker symbol doesn't exist", 403)
 
         # Get share price and calculate total cost
         price = Company.get_share_price(ticker)
@@ -371,6 +394,15 @@ def get_buy_info(company_name, shares):
                 }
             )
 
+        # Insert transaction into database
+        Transaction.insert(session["user_id"], ticker, "buy", shares, price)
+
+        # Update user cash
+        User.update_cash(session["user_id"], total_share_cost, "buy")
+
+        # Update user state
+        State.update(session["user_id"], ticker, shares, "buy")
+
         return jsonify(
             {
                 "flag": "success",
@@ -386,7 +418,7 @@ def get_buy_info(company_name, shares):
 
 @app.route("/buy", methods=["GET"])
 @login_required
-def buy():
+def render_buy_page():
     """Buy shares of stock"""
 
     if request.method == "GET":

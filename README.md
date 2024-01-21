@@ -64,14 +64,15 @@ where value is that (pasted) value, without any space immediately before or afte
 - Here are the definition of routes
 
 
-- ### /login
+### Login
+
+- #### /login
     - GET
         ```
         login.html
         ```
 
-
-- ### /login/authenticate?username=<string:username>&password=<string:password>
+- #### /login/authenticate?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
@@ -105,7 +106,9 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- ### /register/create?username=<string:username>&password=<string:password>
+### Register
+
+- ####  /register/create?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
@@ -138,20 +141,42 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- ### /register
+- #### /register
     - GET
         ```
         register.html
         ```
 
-- ### /logout
+- #### /logout
     - GET
         ```
         redirect to "/login"
         ```
 
 
-- ### /api/user/summary
+### Homepage
+
+- #### /home or /
+    - GET
+        ```
+        homepage.html
+        ```
+
+- #### api/company_names
+    - GET
+        ```jsonc
+        [
+            "Apple Inc",
+            "Tesla Inc",
+            "Microsoft Corporation",
+            "Amazon Inc",
+            "Facebook Inc",
+            "Alphabet Inc",
+        //  ...
+        ]
+        ```
+
+- #### /api/user/summary
     - GET 
         ```json
         {
@@ -177,13 +202,10 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- ### /home or /
-    - GET
-        ```
-        homepage.html
-        ```
 
-- ### /api/quote/get?company_name=<string:company_name>
+### Quote
+
+- #### /api/quote/get?company_name=<string:company_name>
     - GET
         - successful
         ```json
@@ -209,21 +231,22 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
         
-- ### /quote/
+- #### /quote/
     - GET
         ```
         quote.html
         ```
 
+### Buy
 
-- ### /buy
+- #### /buy
     - GET
         ```
         buy.html
         ```
     
 
-- ### /buy/<string:company_name>/<int:shares>
+- #### /buy/?company_name=<string:company_name>&shares=<int:shares>
     - GET
         - successful
         ```json
@@ -236,6 +259,38 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
+        - company name not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null company_name",
+        }
+        ```
+
+        - shares not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null shares",
+        }
+        ```
+
+        - company name does not exist
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid company_name",
+        }
+        ```
+
+        - shares is not a positive integer
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid shares",
+        }
+        ```
+
         - user does not have enough shares
         ```json
         {
@@ -245,7 +300,10 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- ### /api/user/company_names
+
+### Sell
+
+- #### /api/user/company_names
     - GET
         ```json
         [
@@ -254,7 +312,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ]
         ```
 
-- ### /sell/<string:company_name>/<int:shares>
+- #### /sell/<string:company_name>/<int:shares>
     - GET
         - successful
         ```json
