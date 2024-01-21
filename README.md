@@ -64,24 +64,56 @@ where value is that (pasted) value, without any space immediately before or afte
 - Here are the definition of routes
 
 - ### /login/<string:username>/<string:password>
-```
-redirect to /
-```
+    - GET
+        - successful
+        ```json
+        {
+            "flag": "success",
+        }
+        ```
+
+        - invalid username or password
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid",
+        }
+        ```
 
 - ### /login
-```
-login.html
-```
+    - GET
+        ```
+        login.html
+        ```
 
 - ### /register/<string:username>/<string:password>/<string:confirmation>
-```
-redirect to /
-```
+    - GET
+        - successful
+        ```json
+        {
+            "flag": "success",
+        }
+        ```
+        - username already exists
+        ```json
+        {
+            "flag": "error",
+            "reason": "username exists"
+        }
+        ```
+
+- ### /register
+    - GET
+        ```
+        register.html
+        ```
 
 - ### /logout
-```
-redirect("/login")
-```
+    - GET
+        ```
+        redirect to "/login"
+        ```
+
 
 - ### /api/user/summary
     - GET 

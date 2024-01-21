@@ -85,17 +85,29 @@ def login_required(func):
 def get_login_info(username, password):
     """Get login info"""
     if request.method == "GET":
+        # Redirect user to homepage if already logged in
+        if session.get("user_id") is not None:
+            return redirect("/")
+
         # Ensure username exists and password is correct
         if (not User.username_exists(username)) or (
             not check_password_hash(User.get_hash(username), password)
         ):
-            return render_error("Invalid username and/or password", 403)
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid",
+                }
+            )
 
         # Remember which user has logged in
         session["user_id"] = User.get_id(username)
 
-        # Redirect user to home page
-        return redirect("/")
+        return jsonify(
+            {
+                "flag": "success",
+            }
+        )
     else:
         return render_error("Invalid request method", 403)
 
@@ -106,8 +118,10 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     if request.method == "GET":
+        # Redirect user to homepage if already logged in
         if session.get("user_id") is not None:
             return redirect("/")
+
         return render_template("login.html")
 
     else:
@@ -124,7 +138,12 @@ def get_register_info(username, password, confirmation):
 
         # Username is unique
         if User.username_exists(username):
-            return render_error("Username already exists", 403)
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "username exists",
+                }
+            )
 
         # Insert user into database
         User.insert(username, generate_password_hash(password))
@@ -133,7 +152,11 @@ def get_register_info(username, password, confirmation):
         session["user_id"] = User.get_id(username)
 
         # Redirect user to home page
-        return redirect("/")
+        return jsonify(
+            {
+                "flag": "success",
+            }
+        )
     else:
         return render_error("Invalid request method", 403)
 
