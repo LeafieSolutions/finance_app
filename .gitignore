@@ -24,3 +24,6 @@
 
 # export api keys
 run
+
+# test db
+data/finance.db
