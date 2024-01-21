@@ -105,7 +105,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- ### /register/<string:username>/<string:password>/<string:confirmation>
+- ### /register/create/?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
@@ -113,6 +113,23 @@ where value is that (pasted) value, without any space immediately before or afte
             "flag": "success",
         }
         ```
+
+        - username not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null username",
+        }
+        ```
+
+        - password not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null password",
+        }
+        ```
+        
         - username already exists
         ```json
         {

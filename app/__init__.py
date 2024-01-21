@@ -137,7 +137,7 @@ def login_authenticate():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET"])
 def login():
     """Log user in"""
 
@@ -153,13 +153,34 @@ def login():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/register/<string:username>/<string:password>/<string:confirmation>")
-def get_register_info(username, password, confirmation):
-    """Get register info"""
+@app.route("/register/create")
+def register_create():
+    """Create user"""
+
+    # User reached route via GET (as by clicking a link or via redirect)
     if request.method == "GET":
-        # Confirmed password matches
-        if password != confirmation:
-            return render_error("Passwords don't match", 403)
+        # Redirect user to homepage if already logged in
+        if session.get("user_id") is not None:
+            return redirect("/")
+
+        username = request.args.get("username")
+        password = request.args.get("password")
+
+        # Check if username, password, and confirmation are provided
+        if not username:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null username",
+                }
+            )
+        if not password:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null password",
+                }
+            )
 
         # Username is unique
         if User.username_exists(username):
@@ -178,17 +199,17 @@ def get_register_info(username, password, confirmation):
         session["username"] = username
         session["hash"] = generate_password_hash(password)
 
-        # Redirect user to home page
         return jsonify(
             {
                 "flag": "success",
             }
         )
+
     else:
         return render_error("Invalid request method", 403)
 
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET"])
 def register():
     """Register user"""
 
@@ -283,7 +304,7 @@ def get_quote(company_name):
         return render_error("Invalid request method", 403)
 
 
-@app.route("/quote", methods=["GET", "POST"])
+@app.route("/quote", methods=["GET"])
 @login_required
 def quote():
     """Get stock quote."""
@@ -344,7 +365,7 @@ def get_buy_info(company_name, shares):
         return render_error("Invalid request method", 403)
 
 
-@app.route("/buy", methods=["GET", "POST"])
+@app.route("/buy", methods=["GET"])
 @login_required
 def buy():
     """Buy shares of stock"""
@@ -425,7 +446,7 @@ def get_sell_info(company_name, shares):
         return render_error("Invalid request method", 403)
 
 
-@app.route("/sell", methods=["GET", "POST"])
+@app.route("/sell", methods=["GET"])
 @login_required
 def sell():
     """Sell shares of stock"""
@@ -546,7 +567,7 @@ def get_profile_password(old_password, password):
         return render_error("Invalid request method", 403)
 
 
-@app.route("/profile", methods=["GET", "POST"])
+@app.route("/profile", methods=["GET"])
 @login_required
 def update_profile():
     """Update user profile"""
