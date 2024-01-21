@@ -20,33 +20,35 @@ Home
             <p class="text-lg sm:text-xl font-bold">${{ portfolio_total }}</p>
         </div>
     </div>
-    <table class="w-5/6">
-        <thead>
-            <tr>
-                <th class="text-start">Company</th>
-                <th class="text-start">Ticker Symbol</th>
-                <th class="text-end">Share Price</th>
-                <th class="text-end">No. of shares</th>
-                <th class="text-end">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock in summary %}
-            <tr>
-                <td class="text-start">{{ stock.name }}</td>
-                <td class="text-start">{{ stock.ticker }}</td>
-                <td class="text-end">{{ stock.price }}</td>
-                <td class="text-end">{{ stock.shares }}</td>
-                <td class="text-end">{{ stock.total }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4" class="text-right font-bold">Shares Total</td>
-                <td class="text-end">${{ stocks_total }}</td>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="w-full flex justify-center items-center">
+        <table class="w-5/6">
+            <thead>
+                <tr>
+                    <th class="text-start">Company</th>
+                    <th class="text-start">Ticker Symbol</th>
+                    <th class="text-end">Share Price</th>
+                    <th class="text-end">No. of shares</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in summary %}
+                <tr>
+                    <td class="text-start">{{ stock.name }}</td>
+                    <td class="text-start">{{ stock.ticker }}</td>
+                    <td class="text-end">{{ stock.price }}</td>
+                    <td class="text-end">{{ stock.shares }}</td>
+                    <td class="text-end">{{ stock.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-right font-bold">Shares Total</td>
+                    <td class="text-end">${{ stocks_total }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </div>
 {% endblock %}
