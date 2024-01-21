@@ -43,7 +43,7 @@ Register
             const passwordPattern = /^.{6,}$/;
 
             async function register() {
-                let url = `/register/${username.value}/${password.value}/${confirm_password.value}`;
+                let url = `/register/create?username=${username.value}&password=${password.value}`;
                 let response = await fetch(url);
                 let result = await response.json();
                 if (result.flag === "error") {
