@@ -81,33 +81,58 @@ def login_required(func):
     return decorated_function
 
 
-@app.route("/login/<string:username>/<string:password>")
-def get_login_info(username, password):
-    """Get login info"""
+@app.route("/login/authenticate")
+def login_authenticate():
+    """Authenticate user"""
+
+    # User reached route via GET (as by clicking a link or via redirect)
     if request.method == "GET":
         # Redirect user to homepage if already logged in
         if session.get("user_id") is not None:
             return redirect("/")
 
-        # Ensure username exists and password is correct
-        if (not User.username_exists(username)) or (
-            not check_password_hash(User.get_hash(username), password)
-        ):
+        username = request.args.get("username")
+        password = request.args.get("password")
+
+        # Check if username and password are provided
+        if not username:
             return jsonify(
                 {
                     "flag": "error",
-                    "reason": "invalid",
+                    "reason": "null username",
+                }
+            )
+        if not password:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null password",
                 }
             )
 
-        # Remember which user has logged in
-        session["user_id"] = User.get_id(username)
+        else:
+            # Ensure username exists and password is correct
+            if (not User.username_exists(username)) or (
+                not check_password_hash(User.get_hash(username), password)
+            ):
+                return jsonify(
+                    {
+                        "flag": "error",
+                        "reason": "invalid",
+                    }
+                )
 
-        return jsonify(
-            {
-                "flag": "success",
-            }
-        )
+            # Remember which user has logged in
+            session["user_id"] = User.get_id(username)
+            session["username"] = username
+            session["hash"] = generate_password_hash(password)
+
+            return jsonify(
+                {
+                    "flag": "success",
+                }
+            )
+
     else:
         return render_error("Invalid request method", 403)
 
@@ -150,6 +175,8 @@ def get_register_info(username, password, confirmation):
 
         # Remember which user has logged in
         session["user_id"] = User.get_id(username)
+        session["username"] = username
+        session["hash"] = generate_password_hash(password)
 
         # Redirect user to home page
         return jsonify(
@@ -436,7 +463,7 @@ def history():
 def get_username():
     """Get username"""
     if request.method == "GET":
-        return jsonify(User.get_username(session["user_id"]))
+        return jsonify(session["username"])
     else:
         return render_error("Invalid request method", 403)
 

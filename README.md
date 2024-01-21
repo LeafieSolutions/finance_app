@@ -63,12 +63,36 @@ where value is that (pasted) value, without any space immediately before or afte
 
 - Here are the definition of routes
 
-- ### /login/<string:username>/<string:password>
+
+- ### /login
+    - GET
+        ```
+        login.html
+        ```
+
+
+- ### /login/authenticate?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
         {
             "flag": "success",
+        }
+        ```
+
+        - username not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null username",
+        }
+        ```
+
+        - password not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null password",
         }
         ```
 
@@ -80,11 +104,6 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- ### /login
-    - GET
-        ```
-        login.html
-        ```
 
 - ### /register/<string:username>/<string:password>/<string:confirmation>
     - GET
