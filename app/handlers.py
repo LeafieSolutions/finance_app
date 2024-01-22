@@ -2,6 +2,7 @@
 
 
 # Builtins imports
+from datetime import datetime, timedelta
 from os import environ
 from pathlib import Path
 from urllib.parse import quote_plus as url_quote
@@ -9,9 +10,6 @@ from urllib.parse import quote_plus as url_quote
 # PIP imports
 from cs50 import SQL
 from requests import get as get_request, RequestException
-
-# Second-party imports
-from .helpers import render_error
 
 
 # Directories
@@ -160,26 +158,65 @@ class Company:
         return company_name in COMPANY_NAMES
 
     @staticmethod
+    def get_last_update(ticker):
+        """Get the last update of a company"""
+        update_string = DB.execute(
+            "SELECT last_update FROM companies WHERE ticker = ?", ticker
+        )[0]["last_update"]
+
+        return datetime.strptime(update_string, "%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def get_latest_price(ticker):
+        """Get the latest price of a company"""
+        return DB.execute(
+            "SELECT latest_price FROM companies WHERE ticker = ?", ticker
+        )[0]["latest_price"]
+
+    @staticmethod
+    def update_price(ticker, price):
+        """Update the latest price  and last update time of a company"""
+        DB.execute(
+            "UPDATE companies SET latest_price = ?, last_update = ? WHERE ticker = ?",
+            price,
+            datetime.now(),
+            ticker,
+        )
+
+    @staticmethod
     def get_share_price(ticker):
         """Get the share price of a company"""
 
-        # Contact API
-        try:
-            response = get_request(iex_ticker_url(ticker), timeout=3)
+        # Check if ticker exists
+        if not Company.ticker_exists(ticker):
+            raise ValueError("Ticker does not exist")
 
-            # Raise for status
-            response.raise_for_status()
+        # Check if 15 minutes have passed since last update
+        last_update = Company.get_last_update(ticker)
+        if datetime.now() - last_update <= timedelta(minutes=15):
+            return Company.get_latest_price(ticker)
+        else:
+            # Contact API
+            try:
+                response = get_request(iex_ticker_url(ticker), timeout=3)
 
-        except RequestException as err:
-            raise RequestException(err.response.text) from err
+                # Raise for status
+                response.raise_for_status()
 
-        # Parse response
-        try:
-            quote = response.json()
-            return float(quote["latestPrice"])
+            except RequestException as err:
+                raise RequestException(err.response.text) from err
 
-        except (KeyError, TypeError, ValueError) as err:
-            raise RequestException("Unable to parse IEX API response") from err
+            # Parse response
+            try:
+                latest_price = response.json()["latestPrice"]
+
+                # Update price
+                Company.update_price(ticker, latest_price)
+
+                return float(latest_price)
+
+            except (KeyError, TypeError, ValueError) as err:
+                raise RequestException("Unable to parse IEX API response") from err
 
 
 class Transaction:

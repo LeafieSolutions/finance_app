@@ -31,7 +31,6 @@
 
 - Confirm your account via confirmation email
 
-
 - Visit https://iexcloud.io/console/token and copy the key that appears under the Token column (it should begin with pk_).
 
 - In your terminal window, execute:
