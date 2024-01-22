@@ -11,6 +11,9 @@ finance.db
 # FLask session
 *flask_session*
 
+# Initialization files
+run
+
 # Node modules
 *node_modules*
 
@@ -20,11 +23,11 @@ finance.db
 # Project notes
 *note*
 
+# Test files
+*test*
+
 # Virtual Environment
 *env*
 
 # Vs Code Settings
 *code*
-
-# export api keys
-run

@@ -81,9 +81,15 @@ def login_required(func):
 
 
 @application.errorhandler(404)
-def page_not_found(err):
+def render_page_not_found_error(err):
     """Handle 404 errors"""
     return render_error("Page not found", 404)
+
+
+@application.errorhandler(500)
+def render_internal_server_error(err):
+    """Handle 500 errors"""
+    return render_error("Internal server error", 500)
 
 
 @application.route("/api/login/authenticate")

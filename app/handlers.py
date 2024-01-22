@@ -256,8 +256,12 @@ class Transaction:
             user_id,
         )
 
+        len_transactions = len(transactions)
+
         formatted_transactions = []
-        for transaction in transactions:
+        i = 1
+        while i <= len_transactions:
+            transaction = transactions[len_transactions - i]
             formatted_transactions.append(
                 {
                     "timestamp": transaction["time_stamp"],
@@ -274,6 +278,7 @@ class Transaction:
                     ),
                 }
             )
+            i += 1
 
         return formatted_transactions
 
