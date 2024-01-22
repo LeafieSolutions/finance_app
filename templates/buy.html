@@ -135,6 +135,11 @@ Buy
 
                 if (buyResponse.flag === "error") {
                     // failed to fetch Buy
+                    if (buyResponse.error === "not enough cash") {
+                        // not enough cash
+                    } else if (buyResponse.error === "not enough shares") {
+                        // not enough shares
+                    }
                 } else if (buyResponse.flag === "success") {
                     // successfully fetched Buy
                     displayBuy(buyResponse);
