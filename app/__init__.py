@@ -156,115 +156,107 @@ def render_login_page():
 def username_exists():
     """Check if username exists"""
 
-    # User reached route via GET (as by clicking a link or via redirect)
-    if request.method == "GET":
-        username = request.args.get("username")
+    validate_request_method(request, "GET")
 
-        # Check if username is provided
-        if not username:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null username",
-                }
-            )
+    username = request.args.get("username")
 
-        # Check if username exists
-        if User.username_exists(username):
-            return jsonify(
-                {
-                    "flag": "success",
-                    "answer": "exist",
-                }
-            )
-        else:
-            return jsonify(
-                {
-                    "flag": "success",
-                    "answer": "not exist",
-                }
-            )
+    # Check if username is provided
+    if not username:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null username",
+            }
+        )
 
+    # Check if username exists
+    if User.username_exists(username):
+        return jsonify(
+            {
+                "flag": "success",
+                "answer": "exist",
+            }
+        )
     else:
-        return render_error("Invalid request method", 403)
+        return jsonify(
+            {
+                "flag": "success",
+                "answer": "not exist",
+            }
+        )
 
 
 @app.route("/api/register")
 def register_user():
     """Create user"""
 
-    # User reached route via GET (as by clicking a link or via redirect)
-    if request.method == "GET":
-        # Redirect user to homepage if already logged in
-        if session.get("user_id") is not None:
-            return redirect("/")
+    validate_request_method(request, "GET")
 
-        username = request.args.get("username")
-        password = request.args.get("password")
+    # Redirect user to homepage if already logged in
+    if session.get("user_id") is not None:
+        return redirect("/")
 
-        # Check if username, password, and confirmation are provided
-        if not username:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null username",
-                }
-            )
-        if not password:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null password",
-                }
-            )
+    username = request.args.get("username")
+    password = request.args.get("password")
 
-        # Validate username
-        if not validate_username(username):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid username",
-                }
-            )
-
-        # Username is unique
-        if User.username_exists(username):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "username exists",
-                }
-            )
-
-        # Insert user into database
-        User.insert(username, generate_password_hash(password))
-
-        # Remember which user has logged in
-        session["user_id"] = User.get_id(username)
-        session["username"] = username
-        session["hash"] = generate_password_hash(password)
-
+    # Check if username, password, and confirmation are provided
+    if not username:
         return jsonify(
             {
-                "flag": "success",
+                "flag": "error",
+                "reason": "null username",
+            }
+        )
+    if not password:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null password",
             }
         )
 
-    else:
-        return render_error("Invalid request method", 403)
+    # Validate username
+    if not validate_username(username):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid username",
+            }
+        )
+
+    # Username is unique
+    if User.username_exists(username):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "username exists",
+            }
+        )
+
+    # Insert user into database
+    User.insert(username, generate_password_hash(password))
+
+    # Remember which user has logged in
+    session["user_id"] = User.get_id(username)
+    session["username"] = username
+    session["hash"] = generate_password_hash(password)
+
+    return jsonify(
+        {
+            "flag": "success",
+        }
+    )
 
 
 @app.route("/register", methods=["GET"])
 def render_register_page():
     """Register user"""
 
-    if request.method == "GET":
-        if session.get("user_id") is not None:
-            return redirect("/")
-        return render_template("register.html"), 403
+    validate_request_method(request, "GET")
 
-    else:
-        return render_error("Invalid request method", 403)
+    if session.get("user_id") is not None:
+        return redirect("/")
+    return render_template("register.html"), 403
 
 
 @app.route("/logout")
@@ -282,25 +274,24 @@ def logout_user():
 @login_required
 def get_user_summary():
     """Get user summary"""
-    if request.method == "GET":
-        user_state = State.get_user_state(session["user_id"])
+    validate_request_method(request, "GET")
 
-        stocks_total = 0
-        for state in user_state:
-            stocks_total += state["total"]
+    user_state = State.get_user_state(session["user_id"])
 
-        cash = User.get_cash(session["user_id"])
+    stocks_total = 0
+    for state in user_state:
+        stocks_total += state["total"]
 
-        return jsonify(
-            {
-                "state": user_state,
-                "cash": cash,
-                "stocks_total": stocks_total,
-                "portfolio_total": stocks_total + cash,
-            }
-        )
-    else:
-        return render_error("Invalid request method", 403)
+    cash = User.get_cash(session["user_id"])
+
+    return jsonify(
+        {
+            "state": user_state,
+            "cash": cash,
+            "stocks_total": stocks_total,
+            "portfolio_total": stocks_total + cash,
+        }
+    )
 
 
 @app.route("/home")
@@ -308,64 +299,57 @@ def get_user_summary():
 @login_required
 def render_home_page():
     """Show portfolio of stocks"""
-
-    if request.method == "GET":
-        return render_template("homepage.html")
-    else:
-        return render_error("Invalid request method", 403)
+    validate_request_method(request, "GET")
+    return render_template("homepage.html")
 
 
 @app.route("/api/company_names")
 @login_required
 def get_company_names():
     """Get company names"""
-    if request.method == "GET":
-        return jsonify(COMPANY_NAMES)
-    else:
-        return render_error("Invalid request method", 403)
+    validate_request_method(request, "GET")
+    return jsonify(COMPANY_NAMES)
 
 
 @app.route("/api/quote/")
 @login_required
 def get_stock_quote():
     """Get stock quote"""
-    if request.method == "GET":
-        company_name = request.args.get("company_name")
+    validate_request_method(request, "GET")
 
-        # Ensure company name is provided
-        if not company_name:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null company_name",
-                }
-            )
+    company_name = request.args.get("company_name")
 
-        # Ensure company name is valid
-        if not Company.exists(company_name):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid company_name",
-                }
-            )
-
-        ticker = Company.get_ticker(company_name)
-
-        # Get share price
-        price = Company.get_share_price(ticker)
-
+    # Ensure company name is provided
+    if not company_name:
         return jsonify(
             {
-                "flag": "success",
-                "ticker": ticker,
-                "name": company_name,
-                "price": price,
+                "flag": "error",
+                "reason": "null company_name",
             }
         )
 
-    else:
-        return render_error("Invalid request method", 403)
+    # Ensure company name is valid
+    if not Company.exists(company_name):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid company_name",
+            }
+        )
+
+    ticker = Company.get_ticker(company_name)
+
+    # Get share price
+    price = Company.get_share_price(ticker)
+
+    return jsonify(
+        {
+            "flag": "success",
+            "ticker": ticker,
+            "name": company_name,
+            "price": price,
+        }
+    )
 
 
 @app.route("/quote", methods=["GET"])
@@ -373,12 +357,10 @@ def get_stock_quote():
 def render_quote_page():
     """Get stock quote."""
 
-    if request.method == "GET":
-        # select names column from users table
-        return render_template("quote.html")
+    validate_request_method(request, "GET")
 
-    else:
-        return render_error("Invalid request method", 403)
+    # select names column from users table
+    return render_template("quote.html")
 
 
 @app.route("/api/buy")
@@ -386,79 +368,77 @@ def render_quote_page():
 def buy_stock():
     """Get buy info"""
 
-    if request.method == "GET":
-        company_name = request.args.get("company_name")
-        shares = request.args.get("shares", type=int)
+    validate_request_method(request, "GET")
 
-        # Ensure values are provided
-        if not company_name:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null company_name",
-                }
-            )
-        if not shares:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null shares",
-                }
-            )
+    company_name = request.args.get("company_name")
+    shares = request.args.get("shares", type=int)
 
-        if shares <= 0 or not isinstance(shares, int):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid shares",
-                }
-            )
-
-        if not Company.exists(company_name):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid company_name",
-                }
-            )
-
-        ticker = Company.get_ticker(company_name)
-
-        # Get share price and calculate total cost
-        price = Company.get_share_price(ticker)
-        total_share_cost = price * shares
-
-        # Get user cash and ensure user has enough cash
-        cash = User.get_cash(session["user_id"])
-        if cash < total_share_cost:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "insufficient cash",
-                    "cash": cash,
-                }
-            )
-
-        # Insert transaction into database
-        Transaction.insert(session["user_id"], ticker, "buy", shares, price)
-
-        # Update user cash
-        User.update_cash(session["user_id"], total_share_cost, "buy")
-
-        # Update user state
-        State.update(session["user_id"], ticker, shares, "buy")
-
+    # Ensure values are provided
+    if not company_name:
         return jsonify(
             {
-                "flag": "success",
-                "shares": shares,
-                "price": price,
-                "total_share_cost": total_share_cost,
+                "flag": "error",
+                "reason": "null company_name",
+            }
+        )
+    if not shares:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null shares",
             }
         )
 
-    else:
-        return render_error("Invalid request method", 403)
+    if shares <= 0 or not isinstance(shares, int):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid shares",
+            }
+        )
+
+    if not Company.exists(company_name):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid company_name",
+            }
+        )
+
+    ticker = Company.get_ticker(company_name)
+
+    # Get share price and calculate total cost
+    price = Company.get_share_price(ticker)
+    total_share_cost = price * shares
+
+    # Get user cash and ensure user has enough cash
+    cash = User.get_cash(session["user_id"])
+    if cash < total_share_cost:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "insufficient cash",
+                "cash": cash,
+            }
+        )
+
+    # Insert transaction into database
+    Transaction.insert(session["user_id"], ticker, "buy", shares, price)
+
+    # Update user cash
+    User.update_cash(session["user_id"], total_share_cost, "buy")
+
+    # Update user state
+    State.update(session["user_id"], ticker, shares, "buy")
+
+    return jsonify(
+        {
+            "flag": "success",
+            "shares": shares,
+            "price": price,
+            "total_share_cost": total_share_cost,
+        }
+    )
 
 
 @app.route("/buy", methods=["GET"])
@@ -466,21 +446,17 @@ def buy_stock():
 def render_buy_page():
     """Buy shares of stock"""
 
-    if request.method == "GET":
-        return render_template("buy.html")
-
-    else:
-        return render_error("Invalid request method", 403)
+    validate_request_method(request, "GET")
+    return render_template("buy.html")
 
 
 @app.route("/api/user/company_names")
 @login_required
 def get_user_companies():
     """Get user companies"""
-    if request.method == "GET":
-        return jsonify(State.get_companies(session["user_id"]))
-    else:
-        return render_error("Invalid request method", 403)
+
+    validate_request_method(request, "GET")
+    return jsonify(State.get_companies(session["user_id"]))
 
 
 @app.route("/api/sell")
@@ -488,79 +464,76 @@ def get_user_companies():
 def sell_stock():
     """Get sell info"""
 
-    if request.method == "GET":
-        company_name = request.args.get("company_name")
-        shares = request.args.get("shares", type=int)
+    validate_request_method(request, "GET")
+    company_name = request.args.get("company_name")
+    shares = request.args.get("shares", type=int)
 
-        # Ensure values are provided
-        if not company_name:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null company_name",
-                }
-            )
-        if not shares:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null shares",
-                }
-            )
-
-        if shares <= 0 or not isinstance(shares, int):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid shares",
-                }
-            )
-
-        if not company_name in State.get_companies(session["user_id"]):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid company_name",
-                }
-            )
-
-        ticker = Company.get_ticker(company_name)
-
-        # Ensure user has enough shares
-        current_user_shares = State.get_share(session["user_id"], ticker)
-        if shares > current_user_shares:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "insufficient shares",
-                    "shares": current_user_shares,
-                }
-            )
-
-        # Get share price and calculate total cost
-        price = Company.get_share_price(ticker)
-        total_share_cost = price * shares
-
-        # Insert transaction into database
-        Transaction.insert(session["user_id"], ticker, "sell", shares, price)
-
-        # Update user cash
-        User.update_cash(session["user_id"], total_share_cost, "sell")
-
-        # Update user state
-        State.update(session["user_id"], ticker, shares, "sell")
-
+    # Ensure values are provided
+    if not company_name:
         return jsonify(
             {
-                "flag": "success",
-                "shares": shares,
-                "price": price,
-                "total_share_cost": total_share_cost,
+                "flag": "error",
+                "reason": "null company_name",
+            }
+        )
+    if not shares:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null shares",
             }
         )
 
-    else:
-        return render_error("Invalid request method", 403)
+    if shares <= 0 or not isinstance(shares, int):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid shares",
+            }
+        )
+
+    if not company_name in State.get_companies(session["user_id"]):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid company_name",
+            }
+        )
+
+    ticker = Company.get_ticker(company_name)
+
+    # Ensure user has enough shares
+    current_user_shares = State.get_share(session["user_id"], ticker)
+    if shares > current_user_shares:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "insufficient shares",
+                "shares": current_user_shares,
+            }
+        )
+
+    # Get share price and calculate total cost
+    price = Company.get_share_price(ticker)
+    total_share_cost = price * shares
+
+    # Insert transaction into database
+    Transaction.insert(session["user_id"], ticker, "sell", shares, price)
+
+    # Update user cash
+    User.update_cash(session["user_id"], total_share_cost, "sell")
+
+    # Update user state
+    State.update(session["user_id"], ticker, shares, "sell")
+
+    return jsonify(
+        {
+            "flag": "success",
+            "shares": shares,
+            "price": price,
+            "total_share_cost": total_share_cost,
+        }
+    )
 
 
 @app.route("/sell", methods=["GET"])
@@ -568,100 +541,91 @@ def sell_stock():
 def render_sell_page():
     """Sell shares of stock"""
 
-    if request.method == "GET":
-        # select names column from users table
-        return render_template("sell.html")
-
-    else:
-        return render_error("Invalid request method", 403)
+    validate_request_method(request, "GET")
+    return render_template("sell.html")
 
 
 @app.route("/api/user/history")
 @login_required
 def get_user_history():
     """Get user transactions"""
-    if request.method == "GET":
-        return jsonify(Transaction.get_all(session["user_id"]))
-    else:
-        return render_error("Invalid request method", 403)
+
+    validate_request_method(request, "GET")
+    return jsonify(Transaction.get_all(session["user_id"]))
 
 
 @app.route("/history")
 @login_required
 def render_history_page():
     """Show history of transactions"""
-    if request.method == "GET":
-        return render_template("history.html")
-    else:
-        return render_error("Invalid request method", 403)
+
+    validate_request_method(request, "GET")
+    return render_template("history.html")
 
 
 @app.route("/api/user/profile/username")
 @login_required
 def get_username():
     """Get username"""
-    if request.method == "GET":
-        return jsonify(session["username"])
-    else:
-        return render_error("Invalid request method", 403)
+
+    validate_request_method(request, "GET")
+    return jsonify(session["username"])
 
 
 @app.route("/api/user/profile/change/username")
 @login_required
 def change_profile():
-    """Get profile username"""
-    if request.method == "GET":
-        new_username = request.args.get("new_username")
+    """Change profile username"""
+    validate_request_method(request, "GET")
 
-        # Ensure values are provided
-        if not new_username:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null username",
-                }
-            )
+    new_username = request.args.get("new_username")
 
-        # Validate username
-        if not validate_username(new_username):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "invalid username",
-                }
-            )
-
-        # Username is unique
-        # Username is not changed
-        if new_username == User.get_username(session["user_id"]):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "not changed",
-                }
-            )
-        elif User.username_exists(new_username):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "already taken",
-                }
-            )
-
-        # Update username in database
-        User.update_username(session["user_id"], new_username)
-
-        session["username"] = new_username
-
+    # Ensure values are provided
+    if not new_username:
         return jsonify(
             {
-                "flag": "success",
-                "username": new_username,
+                "flag": "error",
+                "reason": "null username",
             }
         )
 
-    else:
-        return render_error("Invalid request method", 403)
+    # Validate username
+    if not validate_username(new_username):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid username",
+            }
+        )
+
+    # Username is not changed
+    if new_username == User.get_username(session["user_id"]):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "not changed",
+            }
+        )
+    # Username is unique
+    elif User.username_exists(new_username):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "already taken",
+            }
+        )
+
+    # Update username in database
+    User.update_username(session["user_id"], new_username)
+
+    session["username"] = new_username
+
+    return jsonify(
+        {
+            "flag": "success",
+            "username": new_username,
+        }
+    )
 
 
 @app.route("/api/user/profile/change/password")
@@ -669,49 +633,47 @@ def change_profile():
 def get_profile_password():
     """Get profile password"""
 
-    if request.method == "GET":
-        old_password = request.args.get("old_password")
-        new_password = request.args.get("new_password")
+    validate_request_method(request, "GET")
 
-        # Ensure values are provided
-        if not old_password:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null old_password",
-                }
-            )
-        if not new_password:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null new_password",
-                }
-            )
+    old_password = request.args.get("old_password")
+    new_password = request.args.get("new_password")
 
-        # Old password is correct
-        if not check_password_hash(session["hash"], old_password):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "incorrect old_password",
-                }
-            )
-
-        # Modify hash in session
-        session["hash"] = generate_password_hash(new_password)
-
-        # Update password in database
-        User.update_password(session["user_id"], generate_password_hash(new_password))
-
+    # Ensure values are provided
+    if not old_password:
         return jsonify(
             {
-                "flag": "success",
+                "flag": "error",
+                "reason": "null old_password",
+            }
+        )
+    if not new_password:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null new_password",
             }
         )
 
-    else:
-        return render_error("Invalid request method", 403)
+    # Old password is correct
+    if not check_password_hash(session["hash"], old_password):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "incorrect old_password",
+            }
+        )
+
+    # Modify hash in session
+    session["hash"] = generate_password_hash(new_password)
+
+    # Update password in database
+    User.update_password(session["user_id"], generate_password_hash(new_password))
+
+    return jsonify(
+        {
+            "flag": "success",
+        }
+    )
 
 
 @app.route("/profile", methods=["GET"])
@@ -719,8 +681,5 @@ def get_profile_password():
 def update_profile():
     """Update user profile"""
 
-    if request.method == "GET":
-        return render_template("profile.html")
-
-    else:
-        return render_error("Invalid request method", 403)
+    validate_request_method(request, "GET")
+    return render_template("profile.html")
