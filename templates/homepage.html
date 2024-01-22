@@ -35,17 +35,14 @@ Home
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" class="text-right font-bold">Shares Total</td>
-                    <td class="text-end" id="displaySharesTotal"></td>
+                    <td colspan="4" class="text-end font-bold">Shares Total</td>
+                    <td class="text-end font-bold" id="displaySharesTotal"></td>
                 </tr>
             </tfoot>
         </table>
     </div>
-    <div>
-        <span class="loading loading-ring loading-sm"></span>
+    <div id="loading" class="flex items-center justify-center">
         <span class="loading loading-ring loading-lg"></span>
-        <span class="loading loading-ring loading-xs"></span>
-        <p>Loading</p>
     </div>
     <script>
         let displayCash = document.querySelector("#displayCash");
@@ -53,6 +50,7 @@ Home
         let displayPortfolioTotal = document.querySelector("#displayPortfolioTotal");
         let displayState = document.querySelector("#displayState");
         let displaySharesTotal = document.querySelector("#displaySharesTotal");
+        let loading = document.querySelector("#loading");
         let createElement = (element) => document.createElement(element);
 
         async function getSummary () {
@@ -89,6 +87,7 @@ Home
                 row.appendChild(price);
                 row.appendChild(shares);
                 row.appendChild(total);
+                loading.classList.add("hidden");
                 displayState.appendChild(row);
             }
         }
