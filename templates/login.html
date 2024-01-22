@@ -35,10 +35,10 @@ Log In
         const submitButton = document.querySelector("#submitButton");
         const displayError = document.querySelector("#displayError");
         const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
-        const passwordPattern = /^.{6,}$/;
+        const passwordPattern = /^\S{6,}$/;
 
         async function login() {
-            let url = `/login/${username.value}/${password.value}`;
+            let url = `/login/authenticate?username=${username.value}&password=${password.value}`;
             let response = await fetch(url);
             let result = await response.json();
             if (result.flag === "error") {

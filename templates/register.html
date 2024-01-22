@@ -40,7 +40,7 @@ Register
             const submitButton = document.querySelector("#submitButton");
             const displayError = document.querySelector("#displayError");
             const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
-            const passwordPattern = /^.{6,}$/;
+            const passwordPattern = /^\S{6,}$/;
 
             async function register() {
                 let url = `/register/create?username=${username.value}&password=${password.value}`;
