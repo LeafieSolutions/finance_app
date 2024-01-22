@@ -181,12 +181,12 @@ where value is that (pasted) value, without any space immediately before or afte
     - GET
         ```
         homepage.html
+        ```
 
 - #### /logout
     - GET
         ```
         redirect to "/login"
-        ```
         ```
 
 - #### /api/user/summary
@@ -215,7 +215,7 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- #### api/company_names
+- #### /api/company_names
     - GET
         ```jsonc
         [
@@ -331,7 +331,7 @@ where value is that (pasted) value, without any space immediately before or afte
 
 ### Sell
 
-- #### sell
+- #### /sell
     - GET
         ```
         sell.html
