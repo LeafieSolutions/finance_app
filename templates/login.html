@@ -13,12 +13,15 @@ Log In
         <div>
             <label for="username" class="block text-slate-500">Username</label>
             <input type="text" name="username" id="username" placeholder="Enter your username"
-                class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+                class="bg-slate-300 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
         </div>
         <div>
             <label for="password" class="block text-slate-500">Password</label>
+            <p class="relative">
             <input type="password" name="password" id="password" placeholder="Enter password"
-                class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+                class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
+                <img id="eyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility()" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+            </p>
             <p id="displayError" class="hidden"></p>
         </div>
         <div class="flex items-center justify-center">
@@ -34,6 +37,7 @@ Log In
         const password = document.querySelector("#password");
         const submitButton = document.querySelector("#submitButton");
         const displayError = document.querySelector("#displayError");
+        let eyeImage = document.querySelector("#eyeImage");
         const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
         const passwordPattern = /^\S{6,}$/;
 
@@ -46,6 +50,16 @@ Log In
                 displayError.classList.remove("hidden");
             } else if (result.flag === "success") {
                 window.location.href = "/";
+            }
+        }
+
+        function toggleVisibility () {
+            if (password.type === "password") {
+                password.type = "text";
+                eyeImage.src = "../assets/icons/eye_closed.svg";
+            } else {
+                password.type = "password";
+                eyeImage.src = "../assets/icons/eye_open.svg";
             }
         }
 

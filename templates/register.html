@@ -17,13 +17,20 @@ Register
         </div>
         <div>
             <label for="password" class="block text-slate-500">Password</label>
+            <p class="relative">
             <input type="password" name="password" id="password" placeholder="Enter password"
-                class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+                class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
+                <img id="passwordEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+            </p>
+            <p id="displayError" class="hidden"></p>
         </div>
         <div>
-            <label for="confirm_password" class="block text-slate-500">Confirm password</label>
+            <label for="confirm_password" class="block text-slate-500">Confirm Password</label>
+            <p class="relative">
             <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password"
-                class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+                class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
+                <img id="confirmEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('confirm_password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+            </p>
             <p id="displayError" class="hidden"></p>
         </div>
         <div class="flex items-center justify-center">
@@ -39,6 +46,8 @@ Register
             const confirm_password = document.querySelector("#confirm_password");
             const submitButton = document.querySelector("#submitButton");
             const displayError = document.querySelector("#displayError");
+            let passwordEyeImage = document.querySelector("#passwordEyeImage");
+            let confirmEyeImage = document.querySelector("#confirmEyeImage");
             const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
             const passwordPattern = /^\S{6,}$/;
 
@@ -51,6 +60,18 @@ Register
                     displayError.classList.remove("hidden");
                 } else if (result.flag === "success") {
                     window.location.href = "/";
+                }
+            }
+
+            function toggleVisibility (input) {
+                let inputToggle = input === "password" ? password : confirm_password;
+                let eyeImage = input === "password" ? passwordEyeImage : confirmEyeImage;
+                if (inputToggle.type === "password") {
+                    inputToggle.type = "text";
+                    eyeImage.src = "../assets/icons/eye_closed.svg";
+                } else {
+                    inputToggle.type = "password";
+                    eyeImage.src = "../assets/icons/eye_open.svg";
                 }
             }
 
