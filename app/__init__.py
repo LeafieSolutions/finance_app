@@ -13,7 +13,6 @@ from flask_session import Session
 
 # Second party imports
 from .helpers import (
-    format_number,
     render_error,
     render_template,
     usd,
@@ -81,7 +80,7 @@ def login_required(func):
     return decorated_function
 
 
-@app.route("/login/authenticate")
+@app.route("/api/login/authenticate")
 def login_authenticate():
     """Authenticate user"""
 
@@ -153,7 +152,7 @@ def render_login_page():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/register/create")
+@app.route("/api/register")
 def register_user():
     """Create user"""
 
@@ -179,6 +178,15 @@ def register_user():
                 {
                     "flag": "error",
                     "reason": "null password",
+                }
+            )
+
+        # Validate username
+        if not validate_username(username):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid username",
                 }
             )
 
@@ -249,9 +257,9 @@ def get_user_summary():
         return jsonify(
             {
                 "state": user_state,
-                "cash": format_number(cash),
-                "stocks_total": format_number(stocks_total),
-                "portfolio_total": format_number(stocks_total + cash),
+                "cash": cash,
+                "stocks_total": stocks_total,
+                "portfolio_total": stocks_total + cash,
             }
         )
     else:
@@ -280,7 +288,7 @@ def get_company_names():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/api/quote/get/")
+@app.route("/api/quote/")
 @login_required
 def get_stock_quote():
     """Get stock quote"""
@@ -336,7 +344,7 @@ def render_quote_page():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/buy/purchase")
+@app.route("/api/buy")
 @login_required
 def buy_stock():
     """Get buy info"""
@@ -438,36 +446,57 @@ def get_user_companies():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/sell/<string:company_name>/<int:shares>")
+@app.route("/api/sell")
 @login_required
-def get_sell_info(company_name, shares):
+def sell_stock():
     """Get sell info"""
 
     if request.method == "GET":
+        company_name = request.args.get("company_name")
+        shares = request.args.get("shares", type=int)
+
         # Ensure values are provided
         if not company_name:
-            return render_error("Please provide company name", 403)
-        if not shares:
-            return render_error("Please provide number of shares", 403)
-
-        ticker = Company.get_ticker(company_name)
-
-        # Ensure values are valid
-        validate_cash_value(str(shares))
-
-        if not Company.ticker_exists(ticker):
-            return render_error("Ticker symbol doesn't exist", 403)
-
-        # Ensure user has shares in the company
-        if not State.ticker_exists(session["user_id"], ticker):
-            return render_error("You don't have any shares in this company", 403)
-
-        # Ensure user has enough shares
-        if shares > State.get_share(session["user_id"], ticker):
             return jsonify(
                 {
                     "flag": "error",
-                    "reason": "non-existent shares",
+                    "reason": "null company_name",
+                }
+            )
+        if not shares:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null shares",
+                }
+            )
+
+        if shares <= 0 or not isinstance(shares, int):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid shares",
+                }
+            )
+
+        if not company_name in State.get_companies(session["user_id"]):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid company_name",
+                }
+            )
+
+        ticker = Company.get_ticker(company_name)
+
+        # Ensure user has enough shares
+        current_user_shares = State.get_share(session["user_id"], ticker)
+        if shares > current_user_shares:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "insufficient shares",
+                    "shares": current_user_shares,
                 }
             )
 
@@ -479,7 +508,7 @@ def get_sell_info(company_name, shares):
         Transaction.insert(session["user_id"], ticker, "sell", shares, price)
 
         # Update user cash
-        User.update_cash(session["user_id"], total_share_cost, "add")
+        User.update_cash(session["user_id"], total_share_cost, "sell")
 
         # Update user state
         State.update(session["user_id"], ticker, shares, "sell")
@@ -499,7 +528,7 @@ def get_sell_info(company_name, shares):
 
 @app.route("/sell", methods=["GET"])
 @login_required
-def sell():
+def render_sell_page():
     """Sell shares of stock"""
 
     if request.method == "GET":
@@ -512,7 +541,7 @@ def sell():
 
 @app.route("/api/user/history")
 @login_required
-def get_transactions():
+def get_user_history():
     """Get user transactions"""
     if request.method == "GET":
         return jsonify(Transaction.get_all(session["user_id"]))
@@ -522,7 +551,7 @@ def get_transactions():
 
 @app.route("/history")
 @login_required
-def history():
+def render_history_page():
     """Show history of transactions"""
     if request.method == "GET":
         return render_template("history.html")
@@ -530,7 +559,7 @@ def history():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/api/user/username")
+@app.route("/api/user/profile/username")
 @login_required
 def get_username():
     """Get username"""
@@ -540,20 +569,41 @@ def get_username():
         return render_error("Invalid request method", 403)
 
 
-@app.route("/profile/<string:username>")
+@app.route("/api/user/profile/change/username")
 @login_required
-def get_profile_username(username):
+def change_profile():
     """Get profile username"""
     if request.method == "GET":
+        new_username = request.args.get("new_username")
+
         # Ensure values are provided
-        if not username:
-            return render_error("Please provide username", 403)
+        if not new_username:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null username",
+                }
+            )
 
         # Validate username
-        validate_username(username)
+        if not validate_username(new_username):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid username",
+                }
+            )
 
         # Username is unique
-        if User.username_exists(username):
+        # Username is not changed
+        if new_username == User.get_username(session["user_id"]):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "not changed",
+                }
+            )
+        elif User.username_exists(new_username):
             return jsonify(
                 {
                     "flag": "error",
@@ -561,22 +611,15 @@ def get_profile_username(username):
                 }
             )
 
-        # Username is not changed
-        elif not username == User.get_username(session["user_id"]):
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "not changed",
-                }
-            )
-
         # Update username in database
-        User.update_username(session["user_id"], username)
+        User.update_username(session["user_id"], new_username)
+
+        session["username"] = new_username
 
         return jsonify(
             {
                 "flag": "success",
-                "username": username,
+                "username": new_username,
             }
         )
 
@@ -584,29 +627,42 @@ def get_profile_username(username):
         return render_error("Invalid request method", 403)
 
 
-@app.route("/profile/<string:old_password>/<string:password>")
+@app.route("/api/user/profile/change/password")
 @login_required
-def get_profile_password(old_password, password):
+def get_profile_password():
     """Get profile password"""
 
     if request.method == "GET":
+        old_password = request.args.get("old_password")
+        new_password = request.args.get("new_password")
+
         # Ensure values are provided
         if not old_password:
-            return render_error("Please provide old password", 403)
-        if not password:
-            return render_error("Please provide new password", 403)
-
-        # Old password is correct
-        if not check_password_hash(User.get_hash(session["user_id"]), old_password):
             return jsonify(
                 {
                     "flag": "error",
-                    "reason": "incorrect password",
+                    "reason": "null old_password",
+                }
+            )
+        if not new_password:
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "null new_password",
+                }
+            )
+
+        # Old password is correct
+        if not check_password_hash(session["hash"], old_password):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "incorrect old_password",
                 }
             )
 
         # Update password in database
-        User.update_password(session["user_id"], generate_password_hash(password))
+        User.update_password(session["user_id"], generate_password_hash(new_password))
 
         return jsonify(
             {

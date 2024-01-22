@@ -11,7 +11,7 @@ from cs50 import SQL
 from requests import get as get_request, RequestException
 
 # Second-party imports
-from .helpers import render_error
+from .helpers import format_number, render_error
 
 
 # Directories
@@ -168,7 +168,7 @@ class Company:
         # Parse response
         try:
             quote = response.json()
-            return float(quote["latestPrice"])
+            return format_number(float(quote["latestPrice"]))
 
         except (KeyError, TypeError, ValueError):
             return render_error("Invalid response", 403)
@@ -276,15 +276,21 @@ class State:
         return formatted_states
 
     @staticmethod
-    def user_exists(user_id) -> bool:
-        """Check if user exists in the state"""
-        user = DB.execute("""SELECT user_id FROM states WHERE user_id = ?""", user_id)
-        return len(user) == 1
+    def get_companies(user_id):
+        """Get all companies of a user"""
+        tickers = DB.execute(
+            """
+            SELECT comp_ticker FROM states
+            WHERE user_id = ?
+            """,
+            user_id,
+        )
+        return [Company.get_name(ticker["comp_ticker"]) for ticker in tickers]
 
     @staticmethod
-    def ticker_exists(user_id, ticker) -> bool:
-        """Check if ticker exists in the state"""
-        ticker = DB.execute(
+    def state_exists(user_id, ticker):
+        """Check if state exists"""
+        state = DB.execute(
             """
             SELECT comp_ticker FROM states
             WHERE user_id = ? AND comp_ticker = ?
@@ -292,38 +298,13 @@ class State:
             user_id,
             ticker,
         )
-        return len(ticker) == 1
-
-    @staticmethod
-    def get_companies(user_id):
-        """Get all companies of a user"""
-        user_state = State.get_user_state(user_id)
-
-        formatted_states = []
-        for state in user_state:
-            if state["name"] not in formatted_states:
-                formatted_states.append(state["name"])
-
-        return formatted_states
+        return len(state) == 1
 
     @staticmethod
     def update(user_id, ticker, shares, action):
         """Update the state of a user"""
 
-        if (not State.user_exists(user_id)) or (
-            not State.ticker_exists(user_id, ticker)
-        ):
-            DB.execute(
-                """
-                INSERT INTO states (user_id, comp_ticker, shares)
-                VALUES (?, ?, ?)
-                """,
-                user_id,
-                ticker,
-                0,
-            )
-
-        if not State.ticker_exists(user_id, ticker):
+        if not State.state_exists(user_id, ticker):
             DB.execute(
                 """
                 INSERT INTO states (user_id, comp_ticker, shares)
@@ -336,7 +317,7 @@ class State:
 
         current_shares = State.get_share(user_id, ticker)
 
-        shares = TRANS_TYPES[action] * shares
+        shares *= TRANS_TYPES[action]
         shares += current_shares
 
         DB.execute(

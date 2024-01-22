@@ -54,6 +54,4 @@ def validate_cash_value(value):
 
 def validate_username(username):
     """Parse username"""
-
-    if not regex_match(r"^[a-zA-Z][a-z_A-Z0-9]{3,}$", username):
-        return render_error("Invalid username", 403)
+    return regex_match(r"^[a-zA-Z][a-z_A-Z0-9]{3,}$", username)

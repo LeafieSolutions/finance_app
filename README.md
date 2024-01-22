@@ -59,10 +59,7 @@ where value is that (pasted) value, without any space immediately before or afte
 - Create a pull request and wait for confirmation
 
 
-## Frontend
-
-- Here are the definition of routes
-
+## API End Points
 
 ### Login
 
@@ -72,7 +69,7 @@ where value is that (pasted) value, without any space immediately before or afte
         login.html
         ```
 
-- #### /login/authenticate?username=<string:username>&password=<string:password>
+- #### /api/login/authenticate?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
@@ -108,7 +105,7 @@ where value is that (pasted) value, without any space immediately before or afte
 
 ### Register
 
-- ####  /register/create?username=<string:username>&password=<string:password>
+- ####  /api/register?username=<string:username>&password=<string:password>
     - GET
         - successful
         ```json
@@ -130,6 +127,14 @@ where value is that (pasted) value, without any space immediately before or afte
         {
             "flag": "error",
             "reason": "null password",
+        }
+        ```
+
+        - invalid username
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid username",
         }
         ```
 
@@ -162,20 +167,6 @@ where value is that (pasted) value, without any space immediately before or afte
         homepage.html
         ```
 
-- #### api/company_names
-    - GET
-        ```jsonc
-        [
-            "Apple Inc",
-            "Tesla Inc",
-            "Microsoft Corporation",
-            "Amazon Inc",
-            "Facebook Inc",
-            "Alphabet Inc",
-        //  ...
-        ]
-        ```
-
 - #### /api/user/summary
     - GET 
         ```json
@@ -202,10 +193,24 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
+- #### api/company_names
+    - GET
+        ```jsonc
+        [
+            "Apple Inc",
+            "Tesla Inc",
+            "Microsoft Corporation",
+            "Amazon Inc",
+            "Facebook Inc",
+            "Alphabet Inc",
+        //  ...
+        ]
+        ```
+
 
 ### Quote
 
-- #### /api/quote/get?company_name=<string:company_name>
+- #### /api/quote?company_name=<string:company_name>
     - GET
         - successful
         ```json
@@ -246,7 +251,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
     
 
-- #### /buy/?company_name=<string:company_name>&shares=<int:shares>
+- #### /api/buy?company_name=<string:company_name>&shares=<int:shares>
     - GET
         - successful
         ```json
@@ -312,7 +317,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ]
         ```
 
-- #### /sell/<string:company_name>/<int:shares>
+- #### /api/sell?company_name=<string:company_name>&shares=<int:shares>
     - GET
         - successful
         ```json
@@ -324,23 +329,56 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
+        - company name not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null company_name",
+        }
+        ```
+
+        - shares not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null shares",
+        }
+        ```
+
+        - shares is not a positive integer
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid shares",
+        }
+        ```
+
+        - user does not have shares in company
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid company_name",
+        }
+        ```
+
         - user does not have enough shares
         ```json
         {
             "flag": "error",
-            "reason": "non-existent shares",
+            "reason": "insufficient shares",
         }
         ```
 
 
-- ### sell
+- #### sell
     - GET
         ```
         sell.html
         ```
 
+### History
 
-- ### /api/user/history
+- #### /api/user/history
     - GET
         ```json
         [
@@ -364,21 +402,22 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- ### /history
+- #### /history
     - GET
         ```
         history.html
         ```
 
-- ### /api/user/username
+
+### Profile
+
+- #### /api/user/profile/username
     - GET
-        ```json
-        {
-            "username": "username"
-        }
+        ```
+        "testuser"
         ```
 
-- ### /profile/username/<string:username>
+- #### /api/user/profile/change/username?username=<string:new_username>
     - GET
         - successful
         ```json
@@ -387,11 +426,25 @@ where value is that (pasted) value, without any space immediately before or afte
             "username": "test_user"
         }
         ```
+        - username not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null username",
+        }
+        ```
+        - invalid username
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid username",
+        }
+        ```
         - username already exists
         ```json
         {
             "flag": "error",
-            "reason": "username already exists"
+            "reason": "already taken"
         }
         ```
 
@@ -405,12 +458,26 @@ where value is that (pasted) value, without any space immediately before or afte
         
 
 
-- ### /profile/password/<string:old_password>/<string:password>
+- #### /api/user/profile/change/password?old_password=<string:old_password>&new_password=<string:new_password>
     - GET
         - successful
         ```json
         {
             "flag": "success",
+        }
+        ```
+        - old password not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null old_password",
+        }
+        ```
+        - new password not passed in url query
+        ```json
+        {
+            "flag": "error",
+            "reason": "null new_password",
         }
         ```
 
@@ -423,7 +490,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
     
 
-- ### /profile
+- #### /profile
     - GET
         ```
         profile.html
