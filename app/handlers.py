@@ -323,6 +323,7 @@ class State:
                 }
             )
 
+        formatted_states.sort(key=lambda x: x["name"], reverse=False)
         return formatted_states
 
     @staticmethod
