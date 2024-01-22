@@ -14,7 +14,7 @@
 
     Prerequisite | Installation
     ---- | ----
-    python3 | Install python depending on your OS
+    python3 | Install python3 depending on your OS
     pip3 | `wget https://bootstrap.pypi.io/get-pip.py; python3 get-pip.py; rm get-pip.py`
     virtualenv | `pip3 install virtualenv`
 
@@ -39,10 +39,10 @@ where value is that (pasted) value, without any space immediately before or afte
 
     (*You also may wish to paste that value in a text document somewhere, in case you need it again later*).
 
-## Usage
+## Production
 - Setup the project as indicated [the setup section](#setup) of this README
 
-- Run Flask's server: `python -m app`
+- Run Flask's server using gunicorn: `gunicorn -b 127.0.0.1:5000 app`
 
 - You can now trade stocks !!!
 
@@ -319,7 +319,7 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-        - user does not have enough shares
+        - user does not have enough cash
         ```json
         {
             "flag": "error",

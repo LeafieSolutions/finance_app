@@ -31,7 +31,7 @@ from .handlers import (
 
 
 # Configure application
-app = Flask(
+application = Flask(
     __name__,
     template_folder=TEMPLATES_DIR,
     static_url_path="/assets",
@@ -39,15 +39,15 @@ app = Flask(
 )
 
 # Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+application.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Custom filter
-app.jinja_env.filters["usd"] = usd
+application.jinja_env.filters["usd"] = usd
 
 # Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+application.config["SESSION_PERMANENT"] = False
+application.config["SESSION_TYPE"] = "filesystem"
+Session(application)
 
 
 # Make sure API key is set
@@ -55,7 +55,7 @@ if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
 
-@app.after_request
+@application.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -80,13 +80,13 @@ def login_required(func):
     return decorated_function
 
 
-@app.errorhandler(404)
+@application.errorhandler(404)
 def page_not_found(err):
     """Handle 404 errors"""
     return render_error("Page not found", 404)
 
 
-@app.route("/api/login/authenticate")
+@application.route("/api/login/authenticate")
 def login_authenticate():
     """Authenticate user"""
 
@@ -139,7 +139,7 @@ def login_authenticate():
         )
 
 
-@app.route("/login", methods=["GET"])
+@application.route("/login", methods=["GET"])
 def render_login_page():
     """Log user in"""
 
@@ -152,7 +152,7 @@ def render_login_page():
     return render_template("login.html")
 
 
-@app.route("/api/register/username_exists")
+@application.route("/api/register/username_exists")
 def username_exists():
     """Check if username exists"""
 
@@ -186,7 +186,7 @@ def username_exists():
         )
 
 
-@app.route("/api/register")
+@application.route("/api/register")
 def register_user():
     """Create user"""
 
@@ -248,7 +248,7 @@ def register_user():
     )
 
 
-@app.route("/register", methods=["GET"])
+@application.route("/register", methods=["GET"])
 def render_register_page():
     """Register user"""
 
@@ -259,7 +259,7 @@ def render_register_page():
     return render_template("register.html"), 403
 
 
-@app.route("/logout")
+@application.route("/logout")
 def logout_user():
     """Log user out"""
 
@@ -270,7 +270,7 @@ def logout_user():
     return redirect("/login")
 
 
-@app.route("/api/user/summary")
+@application.route("/api/user/summary")
 @login_required
 def get_user_summary():
     """Get user summary"""
@@ -294,8 +294,8 @@ def get_user_summary():
     )
 
 
-@app.route("/home")
-@app.route("/")
+@application.route("/home")
+@application.route("/")
 @login_required
 def render_home_page():
     """Show portfolio of stocks"""
@@ -303,7 +303,7 @@ def render_home_page():
     return render_template("homepage.html")
 
 
-@app.route("/api/company_names")
+@application.route("/api/company_names")
 @login_required
 def get_company_names():
     """Get company names"""
@@ -311,7 +311,7 @@ def get_company_names():
     return jsonify(COMPANY_NAMES)
 
 
-@app.route("/api/quote/")
+@application.route("/api/quote/")
 @login_required
 def get_stock_quote():
     """Get stock quote"""
@@ -352,7 +352,7 @@ def get_stock_quote():
     )
 
 
-@app.route("/quote", methods=["GET"])
+@application.route("/quote", methods=["GET"])
 @login_required
 def render_quote_page():
     """Get stock quote."""
@@ -363,7 +363,7 @@ def render_quote_page():
     return render_template("quote.html")
 
 
-@app.route("/api/buy")
+@application.route("/api/buy")
 @login_required
 def buy_stock():
     """Get buy info"""
@@ -441,7 +441,7 @@ def buy_stock():
     )
 
 
-@app.route("/buy", methods=["GET"])
+@application.route("/buy", methods=["GET"])
 @login_required
 def render_buy_page():
     """Buy shares of stock"""
@@ -450,7 +450,7 @@ def render_buy_page():
     return render_template("buy.html")
 
 
-@app.route("/api/user/company_names")
+@application.route("/api/user/company_names")
 @login_required
 def get_user_companies():
     """Get user companies"""
@@ -459,7 +459,7 @@ def get_user_companies():
     return jsonify(State.get_companies(session["user_id"]))
 
 
-@app.route("/api/sell")
+@application.route("/api/sell")
 @login_required
 def sell_stock():
     """Get sell info"""
@@ -536,7 +536,7 @@ def sell_stock():
     )
 
 
-@app.route("/sell", methods=["GET"])
+@application.route("/sell", methods=["GET"])
 @login_required
 def render_sell_page():
     """Sell shares of stock"""
@@ -545,7 +545,7 @@ def render_sell_page():
     return render_template("sell.html")
 
 
-@app.route("/api/user/history")
+@application.route("/api/user/history")
 @login_required
 def get_user_history():
     """Get user transactions"""
@@ -554,7 +554,7 @@ def get_user_history():
     return jsonify(Transaction.get_all(session["user_id"]))
 
 
-@app.route("/history")
+@application.route("/history")
 @login_required
 def render_history_page():
     """Show history of transactions"""
@@ -563,7 +563,7 @@ def render_history_page():
     return render_template("history.html")
 
 
-@app.route("/api/user/profile/username")
+@application.route("/api/user/profile/username")
 @login_required
 def get_username():
     """Get username"""
@@ -572,7 +572,7 @@ def get_username():
     return jsonify(session["username"])
 
 
-@app.route("/api/user/profile/change/username")
+@application.route("/api/user/profile/change/username")
 @login_required
 def change_profile():
     """Change profile username"""
@@ -628,7 +628,7 @@ def change_profile():
     )
 
 
-@app.route("/api/user/profile/change/password")
+@application.route("/api/user/profile/change/password")
 @login_required
 def get_profile_password():
     """Get profile password"""
@@ -676,7 +676,7 @@ def get_profile_password():
     )
 
 
-@app.route("/profile", methods=["GET"])
+@application.route("/profile", methods=["GET"])
 @login_required
 def update_profile():
     """Update user profile"""

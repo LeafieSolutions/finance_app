@@ -2,9 +2,9 @@
 
 
 # Second-party modules
-from . import app
+from . import application
 
 
 # Main execution
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True)
