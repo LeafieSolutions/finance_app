@@ -14,7 +14,7 @@ CREATE TABLE companies (
     ticker TEXT NOT NULL UNIQUE,
     name TEXT
     latest_price NUMERIC DEFAULT 0 NOT NULL,
-    last_update DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_update DATETIME DEFAULT '2022-01-01 10:00:00' NOT NULL,
 );
 
 
@@ -23,7 +23,7 @@ CREATE UNIQUE INDEX ticker ON companies (ticker);
 
 CREATE TABLE transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        time_stamp DATETIME DEFAULT '2022-01-01 10:00:00' NOT NULL,
+        time_stamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
         user_id INTEGER NOT NULL,
         comp_ticker TEXT NOT NULL,
         trans_type TEXT NOT NULL,
