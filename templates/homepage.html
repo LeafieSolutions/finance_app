@@ -9,20 +9,20 @@ Home
     <div class="flex justify-around items-center text-black">
         <div>
             <p class="underline text-xl">Cash Total</p>
-            <p class="text-lg sm:text-xl font-bold" id="displayCash"></p>
+            <p class="text-lg sm:text-xl font-bold text-right" id="displayCash"></p>
         </div>
         <div>
             <p class="underline text-xl">Stocks Total</p>
-            <p class="text-lg sm:text-xl font-bold" id="displayStocksTotal">${{ stocks_total }}</p>
+            <p class="text-lg sm:text-xl font-bold text-right" id="displayStocksTotal"></p>
         </div>
         <div>
             <p class="underline text-xl">Portfolio Total</p>
-            <p class="text-lg sm:text-xl font-bold" id="displayPortfolioTotal">${{ portfolio_total }}</p>
+            <p class="text-lg sm:text-xl font-bold text-right" id="displayPortfolioTotal"></p>
         </div>
     </div>
     <div class="w-full flex justify-center items-center">
         <table class="w-5/6">
-            <thead>
+            <thead class="border-b border-b-slate-600">
                 <tr>
                     <th class="text-start">Company</th>
                     <th class="text-start">Ticker Symbol</th>
@@ -42,46 +42,49 @@ Home
         </table>
     </div>
     <script>
-        
-        async function login() {
-            let displayCash = document.querySelector("#displayCash");
-            let displayStocksTotal = document.querySelector("#displayStocksTotal");
-            let displayPortfolioTotal = document.querySelector("#displayPortfolioTotal");
-            let displayState = document.querySelector("#displayState");
-            let displaySharesTotal = document.querySelector("#displaySharesTotal");
-            let createElement = (element) => document.createElement(element);
+        let displayCash = document.querySelector("#displayCash");
+        let displayStocksTotal = document.querySelector("#displayStocksTotal");
+        let displayPortfolioTotal = document.querySelector("#displayPortfolioTotal");
+        let displayState = document.querySelector("#displayState");
+        let displaySharesTotal = document.querySelector("#displaySharesTotal");
+        let createElement = (element) => document.createElement(element);
 
-            async function getSummary () {
-                let url = `/api/user/summary`;
-                let response = await fetch(url);
-                let summary = await response.json();
-                displaySummary(summary);
-            }
+        async function getSummary () {
+            let url = `/api/user/summary`;
+            let response = await fetch(url);
+            let summary = await response.json();
+            console.log(summary);
+            displaySummary(summary);
+        }
+        getSummary();
 
-            function displaySummary (summary) {
-                displayCash.textContent = `$${summary.cash}`;
-                displayStocksTotal.textContent = `$${summary.stocks_total}`;
-                displayPortfolioTotal.textContent = `$${summary.portfolio_total}`;
-                displaySharesTotal.textContent = `$${summary.stocks_total}`;
-                for (let i = 0; i < summary.stocks.length; i++) {
-                    let row = createElement("tr");
-                    let name = createElement("td");
-                    let ticker = createElement("td");
-                    let price = createElement("td");
-                    let shares = createElement("td");
-                    let total = createElement("td");
-                    name.textContent = summary.stocks[i].name;
-                    ticker.textContent = summary.stocks[i].ticker;
-                    price.textContent = `$${summary.stocks[i].price}`;
-                    shares.textContent = summary.stocks[i].shares;
-                    total.textContent = `$${summary.stocks[i].total}`;
-                    row.appendChild(name);
-                    row.appendChild(ticker);
-                    row.appendChild(price);
-                    row.appendChild(shares);
-                    row.appendChild(total);
-                    displayState.appendChild(row);
-                }
+        function displaySummary (summary) {
+            displayCash.textContent = `$${summary.cash}`;
+            displayStocksTotal.textContent = `$${summary.stocks_total}`;
+            displayPortfolioTotal.textContent = `$${summary.portfolio_total}`;
+            displaySharesTotal.textContent = `$${summary.stocks_total}`;
+            for (let i = 0; i < summary.state.length; i++) {
+                let row = createElement("tr");
+                let name = createElement("td");
+                let ticker = createElement("td");
+                let price = createElement("td");
+                let shares = createElement("td");
+                let total = createElement("td");
+
+                price.classList.add("text-end");
+                shares.classList.add("text-end");
+                total.classList.add("text-end");
+                name.textContent = summary.state[i].name;
+                ticker.textContent = summary.state[i].ticker;
+                price.textContent = `$${summary.state[i].price}`;
+                shares.textContent = summary.state[i].shares;
+                total.textContent = `$${summary.state[i].total}`;
+                row.appendChild(name);
+                row.appendChild(ticker);
+                row.appendChild(price);
+                row.appendChild(shares);
+                row.appendChild(total);
+                displayState.appendChild(row);
             }
         }
     </script>
