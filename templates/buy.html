@@ -28,6 +28,7 @@ Buy
                 <input type="number" name="shares" id="shares" placeholder="Input number of shares"
                     class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
                     required min="1" autocomplete="off">
+                <p id="displaySharesError" class="text-red-400 hidden">Please input number of shares</p>
             </div>
             <div>
                 <button id="submitButton" type="button"
@@ -38,8 +39,11 @@ Buy
             let company_name = document.querySelector("#company_name");
             let listNames = document.querySelector("#displayNames");
             let submitButton = document.querySelector("#submitButton");
+            let displayError = document.querySelector("#displayError");
+            let displaySharesError = document.querySelector("#displaySharesError");
+            let shares = document.querySelector("#shares");
             let buyForm = document.querySelector("#buyForm");
-            let showQuoteResponse = document.querySelector("#displayBuyResponse");
+            let showBuyResponse = document.querySelector("#displayBuyResponse");
             const createElement = (element) => document.createElement(element);
             let matched = [];
 
@@ -84,7 +88,6 @@ Buy
             }
 
             company_name.addEventListener('keyup', (event) => {
-                console.log(event.key);
                 if (event.key === "Backspace" || event.key === "Delete") {
                     while (listNames.firstChild) {
                         listNames.removeChild(listNames.firstChild);
@@ -97,19 +100,31 @@ Buy
 
             submitButton.addEventListener('click', () => {
                 let validName = false;
+                let validShares = false;
                 names.forEach(name => {
                     if (name === company_name.value) {
                         validName = true;
                         return;
                     }
-                })
-                if (validName) {
+                });
+                if (!validName) {
+                    displayError.classList.remove("hidden");
+                    return;
+                } else {
+                    displayError.classList.add("hidden");
+                }
+                if (shares.value < 1) {
+                        displaySharesError.classList.remove("hidden");
+                } else {
+                    displaySharesError.classList.add("hidden");
+                    validShares = true;
+                }
+                if (validName && validShares) {
                     getBuyResponse();
                 } else {
                     while (listNames.firstChild) {
                         listNames.removeChild(listNames.firstChild);
                     }
-                    displayError.classList.remove("hidden");
                 }
             });
 
@@ -119,23 +134,56 @@ Buy
                 let buyResponse = await response.json();
 
                 if (buyResponse.flag === "error") {
-                    // failed to fetch quote
+                    // failed to fetch Buy
                 } else if (buyResponse.flag === "success") {
-                    // successfully fetched quote
+                    // successfully fetched Buy
                     displayBuy(buyResponse);
                 }
             }
 
             function displayBuy (buyResponse) {
-                    buyForm.classList.add("hidden");
-                    let success = createElement("div");
-                    success.classList.add("flex", "flex-col", "items-center", "gap-4");
-                    success.innerHTML = `
-                        <p class="text-center font-bold text-xl">Success!</p>
-                        <p class="text-center">You have successfully bought ${buyResponse.shares} shares of ${buyResponse.company_name} at $${buyResponse.price} per share.</p>
-                        <a href="/" class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Home</a>
-                    `;
-                    document.querySelector("main").appendChild(success);}
+                let buyDiv = createElement("div");
+                let fullMessage = createElement("div");
+                let doneImage = createElement("img");
+                let message = createElement("p");
+                let moreMessage = createElement("p");
+                let companyName = createElement("p");
+                let shares = createElement("p");
+                let dismissButton = createElement("button");
+
+                companyName.classList.add("font-bold", "text-purple-400", "block");
+                shares.classList.add("font-bold", "text-purple-400", "inline");
+                message.classList.add("inline");
+                moreMessage.classList.add("inline");
+                showBuyResponse.classList.remove("hidden");
+                buyDiv.classList.add("p-10","rounded-lg", "flex", "flex-col", "items-center", "gap-10", "shadow-sm", "shadow-slate-800", "h-1/2", "w-2/3", "bg-white");
+                dismissButton.classList.add("bg-purple-800", "font-bold", "text-xl", "text-white", "p-2", "px-16", "rounded-xl", "sm:text-2xl", "sm:p-3", "sm:px-24");
+                buyForm.classList.add("hidden");
+
+                companyName.textContent = company_name.value;
+                shares.textContent = buyResponse.shares;
+                message.textContent = "You've successfully bought ";
+                moreMessage.textContent = ` ${buyResponse.shares === 1 ? "share" : "shares"} of `;
+                doneImage.setAttribute("src", "../assets/icons/done.svg");
+                dismissButton.textContent = "Ok";
+
+                dismissButton.addEventListener('click', () => {
+                    showBuyResponse.classList.add("hidden");
+                    buyForm.classList.remove("hidden");
+                    showBuyResponse.removeChild(showBuyResponse.firstChild);
+                    company_name.value = "";
+                    shares.value = "";
+                })
+
+                fullMessage.appendChild(message);
+                fullMessage.appendChild(shares);
+                fullMessage.appendChild(moreMessage);
+                fullMessage.appendChild(companyName);
+                buyDiv.appendChild(doneImage);
+                buyDiv.appendChild(fullMessage);
+                buyDiv.appendChild(dismissButton);
+                showBuyResponse.appendChild(buyDiv);
+            }
         </script>
     </div>
 </div>
