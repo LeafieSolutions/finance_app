@@ -122,6 +122,11 @@ Buy
                     // failed to fetch quote
                 } else if (buyResponse.flag === "success") {
                     // successfully fetched quote
+                    displayBuy(buyResponse);
+                }
+            }
+
+            function displayBuy (buyResponse) {
                     buyForm.classList.add("hidden");
                     let success = createElement("div");
                     success.classList.add("flex", "flex-col", "items-center", "gap-4");
@@ -130,9 +135,7 @@ Buy
                         <p class="text-center">You have successfully bought ${buyResponse.shares} shares of ${buyResponse.company_name} at $${buyResponse.price} per share.</p>
                         <a href="/" class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Home</a>
                     `;
-                    document.querySelector("main").appendChild(success);
-                }
-            }
+                    document.querySelector("main").appendChild(success);}
         </script>
     </div>
 </div>
