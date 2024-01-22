@@ -15,7 +15,7 @@ Sell
                 <label for="company_name" class="block text-slate-500 mb-2">Company</label>
                 <input type="text" name="company_name" id="company_name" placeholder="Input company name"
                     class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                    required autocomplete="off">
+                    required autocomplete="off" disabled>
                 <div id="displayNames"
                     class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
                 </div>
@@ -24,7 +24,7 @@ Sell
                 <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
                 <input type="number" name="shares" id="shares" placeholder="Input number of shares"
                     class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                    required min="1" autocomplete="off">
+                    required min="1" autocomplete="off" disabled>
             </div>
             <div>
                 <button id="submitButton" type="button"
@@ -45,8 +45,15 @@ Sell
                 let url = "/api/user/company_names";
                 response = await fetch(url);
                 companyNames = await response.json();
+
+                enableForm();
             }
-            getNames(); 
+            getNames();
+
+            function enableForm() {
+                company_name.disabled = false;
+                shares.disabled = false;
+            }
 
             function displayNames() {
                 while (listNames.firstChild) {
