@@ -34,8 +34,9 @@
             <script>
                 let names;
                 async function getNames() {
-                    names = await fetch('/data/companies');
-                    names = await names.json();
+                    let url = 'api/company_names'
+                    response = await fetch(url);
+                    names = await response.json();
                 }
                 getNames();
             </script>
