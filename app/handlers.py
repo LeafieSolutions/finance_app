@@ -11,7 +11,7 @@ from cs50 import SQL
 from requests import get as get_request, RequestException
 
 # Second-party imports
-from .helpers import format_number, render_error
+from .helpers import render_error
 
 
 # Directories
