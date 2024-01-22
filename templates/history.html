@@ -1,36 +1,71 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Buy
+History
 {% endblock %}
 
 {% block main %}
-<div class="w-full flex flex-col items-center gap-10 p-2 absolute">
-    <p class="text-center font-bold text-xl">Transaction history</p>
-    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
-    <table class="w-5/6">
-        <thead>
-            <tr>
-                <th class="text-start">Time</th>
-                <th class="text-start">Company</th>
-                <th class="text-start">Ticker Symbol</th>
-                <th class="text-end">Share Price</th>
-                <th class="text-end">No. of shares</th>
-                <th class="text-end">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
-            <tr>
-                <td class="text-start">{{ transaction.timestamp }}</td>
-                <td class="text-start">{{ transaction.name }}</td>
-                <td class="text-start">{{ transaction.ticker }}</td>
-                <td class="text-end">{{ transaction.price }}</td>
-                <td class="text-end">{{ transaction.shares }}</td>
-                <td class="text-end">{{ transaction.total }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="flex flex-col w-full gap-10">
+    <p class="text-center text-xl font-bold p-2">Transaction History</p>
+    <div class="w-full flex justify-center items-center">
+        <table class="w-5/6 table">
+            <thead class="border-b border-b-slate-600">
+                <tr>
+                    <th class="text-end">Time</th>
+                    <th class="text-start">Company</th>
+                    <th class="text-start">Ticker Symbol</th>
+                    <th class="text-end">Share Price</th>
+                    <th class="text-end">No. of shares</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody id="displayHistory">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let showHistory = document.querySelector("#displayHistory");
+        let displaySharesTotal = document.querySelector("#displaySharesTotal");
+        let createElement = (element) => document.createElement(element);
+
+        async function getHistory () {
+            let url = `/api/user/history`;
+            let response = await fetch(url);
+            let history = await response.json();
+            displayHistory(history);
+        }
+        getHistory();
+
+        function displayHistory (history) {
+            for (let i = 0; i < history.length; i++) {
+                let row = createElement("tr");
+                let timestamp = createElement("td");
+                let name = createElement("td");
+                let ticker = createElement("td");
+                let price = createElement("td");
+                let shares = createElement("td");
+                let total = createElement("td");
+
+                price.classList.add("text-end", "border-r-10");
+                shares.classList.add("text-end", "border-r-10");
+                total.classList.add("text-end", "border-r-10");
+                timestamp.classList.add("text-end", "border-r-10");
+
+                timestamp.textContent = history[i].timestamp;
+                name.textContent = history[i].name;
+                ticker.textContent = history[i].ticker;
+                price.textContent = `$${history[i].price}`;
+                shares.textContent = history[i].shares;
+                total.textContent = `$${history[i].total}`;
+                row.appendChild(timestamp);
+                row.appendChild(name);
+                row.appendChild(ticker);
+                row.appendChild(price);
+                row.appendChild(shares);
+                row.appendChild(total);
+                showHistory.appendChild(row);
+            }
+        }
+    </script>
 </div>
 {% endblock %}

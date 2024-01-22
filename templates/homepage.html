@@ -53,7 +53,6 @@ Home
             let url = `/api/user/summary`;
             let response = await fetch(url);
             let summary = await response.json();
-            console.log(summary);
             displaySummary(summary);
         }
         getSummary();
