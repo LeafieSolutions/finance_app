@@ -9,7 +9,10 @@ Quote
     <div id="displayQuoteResponse" class="bg-slate-400 bg-opacity-50 w-full h-screen absolute top-0 left-0 z-10 flex items-center hidden justify-center"></div>
     <p class="text-center font-bold text-xl">Quote Share Price</p>
     <div class=" relative w-full flex flex-col items-center gap-10 p-2">
-        <a href="/" class="absolute left-10"><img src="../assets/icons/back.svg" alt="back"></a>
+        <div class="absolute left-10 top-4">
+            <a href="/"><img src="../assets/icons/back.svg" alt="back" onmouseover="addText('add')" onmouseout="addText('remove')"></a>
+            <p id="homeButton" class="bg-black bg-opacity-80 text-white rounded-md p-0.5 mt-0.5 hidden">Home</p>
+        </div>
         <form id="quoteForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
             <div class="w-full relative">
                 <label for="company_name" class="block text-slate-500 mb-2">Company</label>
@@ -34,6 +37,14 @@ Quote
             let showQuoteResponse = document.querySelector("#displayQuoteResponse");
             const createElement = (element) => document.createElement(element);
             let matched = [];
+
+            function addText (text) {
+                if (text === "add") {
+                    homeButton.classList.remove("hidden");
+                } else {
+                    homeButton.classList.add("hidden");
+                }
+            };
 
             function displayNames() {
                 while (listNames.firstChild) {

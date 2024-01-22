@@ -7,7 +7,10 @@ Profile
 {% block main %}
 <div class="w-full absolute">
     <p class="text-black font-bold text-xl text-center">My Profile</p>
-    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
+    <div class="absolute left-10 top-4">
+        <a href="/"><img src="../assets/icons/back.svg" alt="back" onmouseover="addText('add')" onmouseout="addText('remove')"></a>
+        <p id="homeButton" class="bg-black bg-opacity-80 text-white rounded-md p-0.5 mt-0.5 hidden">Home</p>
+    </div>
     <form action="/profile" method="post" class="flex items-center justify-center p-12" autocomplete="false">
         <div class="p-8 rounded-2xl flex flex-col gap-8 w-3/4 sm:w-1/3">
             <div>
@@ -45,6 +48,14 @@ Profile
                 const new_password = document.querySelector("#new_password");
                 const confirm_password = document.querySelector("#confirm_password");
                 const submitButton = document.querySelector("#submitButton");
+
+                function addText (text) {
+                    if (text === "add") {
+                        homeButton.classList.remove("hidden");
+                    } else {
+                        homeButton.classList.add("hidden");
+                    }
+                };
             </script>
         </div>
     </form>
