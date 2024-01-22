@@ -114,15 +114,12 @@ Quote
                 price.classList.add("font-bold", "text-purple-400", "block");
                 message.classList.add("inline");
                 moreMessage.classList.add("inline");
-                showQuoteResponse.classList.remove("hidden");
                 quoteDiv.classList.add("p-10","rounded-lg", "flex", "flex-col", "items-center", "gap-10", "shadow-sm", "shadow-slate-800", "h-1/2", "w-2/3", "bg-white");
                 dismissButton.classList.add("bg-purple-800", "font-bold", "text-xl", "text-white", "p-2", "px-16", "rounded-xl", "sm:text-2xl", "sm:p-3", "sm:px-24");
                 quoteForm.classList.add("hidden");
 
                 companyName.textContent = quoteResponse.name;
-                console.log(quoteResponse.price);
                 price.textContent = `$${quoteResponse.price}`;
-                console.log(price.textContent);
                 message.textContent = 'A share of ';
                 moreMessage.textContent = ' is ';
                 doneImage.setAttribute("src", "../assets/icons/done.svg");
@@ -133,7 +130,10 @@ Quote
                     quoteForm.classList.remove("hidden");
                     showQuoteResponse.removeChild(showQuoteResponse.firstChild);
                     company_name.value = "";
-                })
+                });
+                while (showQuoteResponse.firstChild) {
+                    showQuoteResponse.removeChild(showQuoteResponse.firstChild);
+                }
 
                 fullMessage.appendChild(message);
                 fullMessage.appendChild(companyName);
@@ -171,6 +171,10 @@ Quote
 
             function loading () {
                 // load while waiting for response
+                let loadingSign = createElement("span");
+                loadingSign.classList.add("loading", "loading-ring", "loading-lg");
+                showQuoteResponse.classList.remove("hidden");
+                showQuoteResponse.appendChild(loadingSign);
             }
         </script>
     </div>
