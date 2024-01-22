@@ -5,9 +5,12 @@ Quote
 {% endblock %}
 
 {% block main %}
-<div class="w-full flex flex-col items-center gap-10 p-2 absolute">
+<div class="w-full flex flex-col items-center gap-10 p-2">
+    <div class="w-full h-screen absolute top-0 left-0 z-10 hidden"></div>
     <p class="text-center font-bold text-xl">Quote Share Price</p>
-    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
+    <!-- <div class="relative bg-blue-300">
+        <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
+    </div> -->
     <form id="quoteForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
         <div class="w-full relative">
             <label for="company_name" class="block text-slate-500 mb-2">Company</label>
@@ -68,7 +71,6 @@ Quote
         }
 
         company_name.addEventListener('keyup', (event) => {
-            console.log(event.key);
             if (event.key === "Backspace" || event.key === "Delete") {
                 while (listNames.firstChild) {
                     listNames.removeChild(listNames.firstChild);
@@ -80,15 +82,16 @@ Quote
         });
 
         async function getQuoteResponse() {
-                let url = `/api/quote?company_name=${company_name.value}`;
-                response = await fetch(url);
-                let quoteResponse = await response.json();
+            console.log("getQuoteResponse");
+            let url = `/api/quote?company_name=${company_name.value}`;
+            response = await fetch(url);
+            let quoteResponse = await response.json();
 
-                if (quoteResponse.flag === "error") {
-                    // failed to fetch quote
-                } else if (quoteResponse.flag === "success") {
-                    // successfully fetched quote
-                }
+            if (quoteResponse.flag === "error") {
+                // failed to fetch quote
+            } else if (quoteResponse.flag === "success") {
+                console.log(quoteResponse);
+            }
             }
 
         submitButton.addEventListener('click', () => {
@@ -100,9 +103,7 @@ Quote
                 }
             })
             if (validName) {
-                quoteForm.setAttribute('action', '/quote');
-                quoteForm.setAttribute('method', 'POST');
-                submitButton.setAttribute('type', 'submit');
+                getQuoteResponse();
             } else {
                 while (listNames.firstChild) {
                     listNames.removeChild(listNames.firstChild);
