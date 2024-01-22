@@ -168,7 +168,7 @@ class Company:
         # Parse response
         try:
             quote = response.json()
-            return format_number(float(quote["latestPrice"]))
+            return float(quote["latestPrice"])
 
         except (KeyError, TypeError, ValueError):
             return render_error("Invalid response", 403)

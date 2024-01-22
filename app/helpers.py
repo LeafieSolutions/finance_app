@@ -38,11 +38,6 @@ def usd(value):
     return f"${value:,.2f}"
 
 
-def format_number(value):
-    """Format value as USD."""
-    return round(value, 2)
-
-
 def validate_cash_value(value):
     """Validate cash value"""
     if not value:

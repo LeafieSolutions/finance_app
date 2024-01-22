@@ -5,6 +5,9 @@
 1. [Setup](#setup)
 1. [Usage](#usage)
 1. [Contribution](#contribution)
+    1. [Backend](#backend)
+    1. [API End Points](#api-end-points)
+
 
 ## Setup
 - Prerequisites
@@ -24,11 +27,6 @@
 
 - Install dependencies: `pip3 install -r requirements.txt`
 
-## Usage
-- Setup the project as indicated [the setup section](#setup) of this README
-
-- Run the following in the terminal
-
 - Create an **Individual Account** with a **free plan** at https://iexcloud.io/cloud-login#/register/
 
 - Confirm your account via confirmation email
@@ -42,6 +40,9 @@ where value is that (pasted) value, without any space immediately before or afte
 
     (*You also may wish to paste that value in a text document somewhere, in case you need it again later*).
 
+## Usage
+- Setup the project as indicated [the setup section](#setup) of this README
+
 - Run Flask's server: `python -m app`
 
 - You can now trade stocks !!!
@@ -51,8 +52,6 @@ where value is that (pasted) value, without any space immediately before or afte
 - Setup the project as indicated [the setup section](#setup) of this README
 
 - To run the server in development mode run: `flask --app app --debug run`
-
-### Backend
 
 - Make you contribution
 
@@ -105,6 +104,12 @@ where value is that (pasted) value, without any space immediately before or afte
 
 ### Register
 
+- #### /register
+    - GET
+        ```
+        register.html
+        ```
+
 - ####  /api/register?username=<string:username>&password=<string:password>
     - GET
         - successful
@@ -146,18 +151,6 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- #### /register
-    - GET
-        ```
-        register.html
-        ```
-
-- #### /logout
-    - GET
-        ```
-        redirect to "/login"
-        ```
-
 
 ### Homepage
 
@@ -165,6 +158,12 @@ where value is that (pasted) value, without any space immediately before or afte
     - GET
         ```
         homepage.html
+
+- #### /logout
+    - GET
+        ```
+        redirect to "/login"
+        ```
         ```
 
 - #### /api/user/summary
@@ -210,6 +209,12 @@ where value is that (pasted) value, without any space immediately before or afte
 
 ### Quote
 
+- #### /quote
+    - GET
+        ```
+        quote.html
+        ```
+
 - #### /api/quote?company_name=<string:company_name>
     - GET
         - successful
@@ -235,12 +240,7 @@ where value is that (pasted) value, without any space immediately before or afte
             "reason": "invalid company_name",
         }
         ```
-        
-- #### /quote/
-    - GET
-        ```
-        quote.html
-        ```
+
 
 ### Buy
 
@@ -308,6 +308,12 @@ where value is that (pasted) value, without any space immediately before or afte
 
 ### Sell
 
+- #### sell
+    - GET
+        ```
+        sell.html
+        ```
+
 - #### /api/user/company_names
     - GET
         ```json
@@ -370,13 +376,14 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- #### sell
-    - GET
-        ```
-        sell.html
-        ```
 
 ### History
+
+- #### /history
+    - GET
+        ```
+        history.html
+        ```
 
 - #### /api/user/history
     - GET
@@ -402,14 +409,16 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- #### /history
-    - GET
-        ```
-        history.html
-        ```
-
 
 ### Profile
+
+
+- #### /profile
+    - GET
+        ```
+        profile.html
+        ```
+
 
 - #### /api/user/profile/username
     - GET
@@ -489,9 +498,3 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
     
-
-- #### /profile
-    - GET
-        ```
-        profile.html
-        ```
