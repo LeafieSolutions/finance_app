@@ -154,6 +154,7 @@ Quote
                     }
                 })
                 if (validName) {
+                    loading();
                     getQuoteResponse();
                 } else {
                     while (listNames.firstChild) {
@@ -166,7 +167,11 @@ Quote
                 }
 
 
-            })
+            });
+
+            function loading () {
+                // load while waiting for response
+            }
         </script>
     </div>
 </div>
