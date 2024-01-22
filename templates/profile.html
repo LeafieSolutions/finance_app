@@ -21,22 +21,30 @@ Profile
             </div>
             <div>
                 <label for="old_password" class="block text-slate-500">Old Password</label>
-                <input type="password" name="old_password" id="old_password" placeholder="Enter password"
-                    autocomplete="off"
-                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
-                    required>
+                <p class="relative">
+                <input type="password" name="old_password" id="old_password" placeholder="Old password"
+                    class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
+                    <img id="oldEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('old_password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+                </p>
+                <p id="displayOldError" class="hidden"></p>
             </div>
             <div>
-                <label for="new_password" class="block text-slate-500">New Password</label>
-                <input type="password" name="new_password" id="new_password" placeholder="Enter password" required
-                    autocomplete="off"
-                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+                <label for="password" class="block text-slate-500">Password</label>
+                <p class="relative">
+                <input type="password" name="password" id="password" placeholder="Enter password"
+                    class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
+                    <img id="passwordEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+                </p>
+                <p id="displayError" class="hidden"></p>
             </div>
             <div>
-                <label for="confirm_password" class="block text-slate-500">Confirm password</label>
+                <label for="confirm_password" class="block text-slate-500">Confirm Password</label>
+                <p class="relative">
                 <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password"
-                    class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
-                    required autocomplete="off">
+                    class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
+                    <img id="confirmEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('confirm_password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+                </p>
+                <p id="displayConfirmError" class="hidden"></p>
             </div>
             <div class="flex items-center justify-center">
                 <button type="button" id="submitButton"
@@ -45,9 +53,14 @@ Profile
             <script>
                 const username = document.querySelector("#username");
                 const old_password = document.querySelector("#old_password");
-                const new_password = document.querySelector("#new_password");
+                const password = document.querySelector("#password");
                 const confirm_password = document.querySelector("#confirm_password");
                 const submitButton = document.querySelector("#submitButton");
+                let passwordEyeImage = document.querySelector("#passwordEyeImage");
+                let confirmEyeImage = document.querySelector("#confirmEyeImage");
+                let oldEyeImage = document.querySelector("#oldEyeImage");
+                const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
+                const passwordPattern = /^\S{6,}$/;
 
                 function addText (text) {
                     if (text === "add") {
@@ -56,6 +69,28 @@ Profile
                         homeButton.classList.add("hidden");
                     }
                 };
+
+            function toggleVisibility (input) {
+                let inputToggle;
+                let eyeImage;
+                if (input === "password") {
+                    inputToggle = password;
+                    eyeImage = passwordEyeImage;
+                } else if (input === "confirm_password") {
+                    inputToggle = confirm_password;
+                    eyeImage = confirmEyeImage;
+                } else if (input === "old_password") {
+                    inputToggle = old_password;
+                    eyeImage = oldEyeImage;
+                }
+                if (inputToggle.type === "password") {
+                    inputToggle.type = "text";
+                    eyeImage.src = "../assets/icons/eye_closed.svg";
+                } else {
+                    inputToggle.type = "password";
+                    eyeImage.src = "../assets/icons/eye_open.svg";
+                }
+            }
             </script>
         </div>
     </form>
