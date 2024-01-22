@@ -9,15 +9,15 @@ Home
     <div class="flex justify-around items-center text-black">
         <div>
             <p class="underline text-xl">Cash Total</p>
-            <p class="text-lg sm:text-xl font-bold">${{ cash }}</p>
+            <p class="text-lg sm:text-xl font-bold" id="displayCash"></p>
         </div>
         <div>
             <p class="underline text-xl">Stocks Total</p>
-            <p class="text-lg sm:text-xl font-bold">${{ stocks_total }}</p>
+            <p class="text-lg sm:text-xl font-bold" id="displayStocksTotal">${{ stocks_total }}</p>
         </div>
         <div>
             <p class="underline text-xl">Portfolio Total</p>
-            <p class="text-lg sm:text-xl font-bold">${{ portfolio_total }}</p>
+            <p class="text-lg sm:text-xl font-bold" id="displayPortfolioTotal">${{ portfolio_total }}</p>
         </div>
     </div>
     <div class="w-full flex justify-center items-center">
@@ -31,24 +31,59 @@ Home
                     <th class="text-end">Total</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for stock in summary %}
-                <tr>
-                    <td class="text-start">{{ stock.name }}</td>
-                    <td class="text-start">{{ stock.ticker }}</td>
-                    <td class="text-end">{{ stock.price }}</td>
-                    <td class="text-end">{{ stock.shares }}</td>
-                    <td class="text-end">{{ stock.total }}</td>
-                </tr>
-                {% endfor %}
+            <tbody id="displayState">
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="4" class="text-right font-bold">Shares Total</td>
-                    <td class="text-end">${{ stocks_total }}</td>
+                    <td class="text-end" id="displaySharesTotal"></td>
                 </tr>
             </tfoot>
         </table>
     </div>
+    <script>
+        
+        async function login() {
+            let displayCash = document.querySelector("#displayCash");
+            let displayStocksTotal = document.querySelector("#displayStocksTotal");
+            let displayPortfolioTotal = document.querySelector("#displayPortfolioTotal");
+            let displayState = document.querySelector("#displayState");
+            let displaySharesTotal = document.querySelector("#displaySharesTotal");
+            let createElement = (element) => document.createElement(element);
+
+            async function getSummary () {
+                let url = `/api/user/summary`;
+                let response = await fetch(url);
+                let summary = await response.json();
+                displaySummary(summary);
+            }
+
+            function displaySummary (summary) {
+                displayCash.textContent = `$${summary.cash}`;
+                displayStocksTotal.textContent = `$${summary.stocks_total}`;
+                displayPortfolioTotal.textContent = `$${summary.portfolio_total}`;
+                displaySharesTotal.textContent = `$${summary.stocks_total}`;
+                for (let i = 0; i < summary.stocks.length; i++) {
+                    let row = createElement("tr");
+                    let name = createElement("td");
+                    let ticker = createElement("td");
+                    let price = createElement("td");
+                    let shares = createElement("td");
+                    let total = createElement("td");
+                    name.textContent = summary.stocks[i].name;
+                    ticker.textContent = summary.stocks[i].ticker;
+                    price.textContent = `$${summary.stocks[i].price}`;
+                    shares.textContent = summary.stocks[i].shares;
+                    total.textContent = `$${summary.stocks[i].total}`;
+                    row.appendChild(name);
+                    row.appendChild(ticker);
+                    row.appendChild(price);
+                    row.appendChild(shares);
+                    row.appendChild(total);
+                    displayState.appendChild(row);
+                }
+            }
+        }
+    </script>
 </div>
 {% endblock %}
