@@ -8,116 +8,116 @@ Quote
 <div class="w-full flex flex-col items-center gap-10 p-2">
     <div class="w-full h-screen absolute top-0 left-0 z-10 hidden"></div>
     <p class="text-center font-bold text-xl">Quote Share Price</p>
-    <!-- <div class="relative bg-blue-300">
-        <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
-    </div> -->
-    <form id="quoteForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
-        <div class="w-full relative">
-            <label for="company_name" class="block text-slate-500 mb-2">Company</label>
-            <input type="text" name="company_name" id="company_name" placeholder="Input company name"
-                class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                required autocomplete="off">
-            <div id="displayNames"
-                class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
+    <div class=" relative w-full flex flex-col items-center gap-10 p-2">
+        <a href="/" class="absolute left-10"><img src="../assets/icons/back.svg" alt="back"></a>
+        <form id="quoteForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
+            <div class="w-full relative">
+                <label for="company_name" class="block text-slate-500 mb-2">Company</label>
+                <input type="text" name="company_name" id="company_name" placeholder="Input company name"
+                    class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
+                    required autocomplete="off">
+                <div id="displayNames"
+                    class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
+                </div>
             </div>
-        </div>
-        <div>
-            <button id="submitButton" type="button"
-                class="bg-purple-800 font-bold text-xl text-white p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24">Get
-                Quote</button>
-        </div>
-    </form>
-    <script>
-        let company_name = document.querySelector("#company_name");
-        let listNames = document.querySelector("#displayNames");
-        let submitButton = document.querySelector("#submitButton");
-        let quoteForm = document.querySelector("#quoteForm");
-        const createElement = (element) => document.createElement(element);
-        let matched = [];
+            <div>
+                <button id="submitButton" type="button"
+                    class="bg-purple-800 font-bold text-xl text-white p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24">Get
+                    Quote</button>
+            </div>
+        </form>
+        <script>
+            let company_name = document.querySelector("#company_name");
+            let listNames = document.querySelector("#displayNames");
+            let submitButton = document.querySelector("#submitButton");
+            let quoteForm = document.querySelector("#quoteForm");
+            const createElement = (element) => document.createElement(element);
+            let matched = [];
 
-        function displayNames() {
-            while (listNames.firstChild) {
-                listNames.removeChild(listNames.firstChild);
+            function displayNames() {
+                while (listNames.firstChild) {
+                    listNames.removeChild(listNames.firstChild);
+                }
+                for (let i = 0; i < 5; i++) {
+                    let name = createElement("p");
+                    name.classList.add("cursor-pointer");
+                    name.textContent = matched[i];
+                    name.addEventListener('click', () => {
+                        company_name.value = matched[i];
+                        while (listNames.firstChild) {
+                            listNames.removeChild(listNames.firstChild);
+                        }
+                    });
+                    listNames.appendChild(name);
+                }
             }
-            for (let i = 0; i < 5; i++) {
-                let name = createElement("p");
-                name.classList.add("cursor-pointer");
-                name.textContent = matched[i];
-                name.addEventListener('click', () => {
-                    company_name.value = matched[i];
+
+            function checkNames() {
+                matched = [];
+                let userName = company_name.value;
+                if (userName.length < 1) {
+                    return;
+                }
+                let matchName = new RegExp(userName, "i");
+                names.forEach(name => {
+                    if (matchName.test(name)) {
+                        matched.push(name);
+                    }
+                });
+                if (matched.length > 0) {
+                    displayNames();
+                }
+            }
+
+            company_name.addEventListener('keyup', (event) => {
+                if (event.key === "Backspace" || event.key === "Delete") {
                     while (listNames.firstChild) {
                         listNames.removeChild(listNames.firstChild);
                     }
-                });
-                listNames.appendChild(name);
-            }
-        }
-
-        function checkNames() {
-            matched = [];
-            let userName = company_name.value;
-            if (userName.length < 1) {
-                return;
-            }
-            let matchName = new RegExp(userName, "i");
-            names.forEach(name => {
-                if (matchName.test(name)) {
-                    matched.push(name);
+                }
+                if (names) {
+                    checkNames();
                 }
             });
-            if (matched.length > 0) {
-                displayNames();
-            }
-        }
 
-        company_name.addEventListener('keyup', (event) => {
-            if (event.key === "Backspace" || event.key === "Delete") {
-                while (listNames.firstChild) {
-                    listNames.removeChild(listNames.firstChild);
+            async function getQuoteResponse() {
+                console.log("getQuoteResponse");
+                let url = `/api/quote?company_name=${company_name.value}`;
+                response = await fetch(url);
+                let quoteResponse = await response.json();
+
+                if (quoteResponse.flag === "error") {
+                    // failed to fetch quote
+                } else if (quoteResponse.flag === "success") {
+                    console.log(quoteResponse);
                 }
-            }
-            if (names) {
-                checkNames();
-            }
-        });
-
-        async function getQuoteResponse() {
-            console.log("getQuoteResponse");
-            let url = `/api/quote?company_name=${company_name.value}`;
-            response = await fetch(url);
-            let quoteResponse = await response.json();
-
-            if (quoteResponse.flag === "error") {
-                // failed to fetch quote
-            } else if (quoteResponse.flag === "success") {
-                console.log(quoteResponse);
-            }
-            }
-
-        submitButton.addEventListener('click', () => {
-            let validName = false;
-            names.forEach(name => {
-                if (name === company_name.value) {
-                    validName = true;
-                    return;
                 }
-            })
-            if (validName) {
+
+            submitButton.addEventListener('click', () => {
+                let validName = false;
+                names.forEach(name => {
+                    if (name === company_name.value) {
+                        validName = true;
+                        return;
+                    }
+                })
+                if (validName) {
+                    getQuoteResponse();
+                } else {
+                    while (listNames.firstChild) {
+                        listNames.removeChild(listNames.firstChild);
+                    }
+                    let errorMessage = createElement("p");
+                    errorMessage.textContent = "Please enter a valid company name";
+                    errorMessage.classList.add("text-red-500");
+                    listNames.appendChild(errorMessage);
+                }
+
                 getQuoteResponse();
-            } else {
-                while (listNames.firstChild) {
-                    listNames.removeChild(listNames.firstChild);
-                }
-                let errorMessage = createElement("p");
-                errorMessage.textContent = "Please enter a valid company name";
-                errorMessage.classList.add("text-red-500");
-                listNames.appendChild(errorMessage);
-            }
-
-            getQuoteResponse();
 
 
-        })
-    </script>
+            })
+        </script>
+    </div>
 </div>
 {% endblock %}
