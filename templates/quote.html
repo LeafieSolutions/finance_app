@@ -39,7 +39,8 @@ Quote
                 while (listNames.firstChild) {
                     listNames.removeChild(listNames.firstChild);
                 }
-                for (let i = 0; i < 5; i++) {
+                let length = matched.length > 5 ? 5 : matched.length;
+                for (let i = 0; i < length; i++) {
                     let name = createElement("button");
                     name.classList.add("w-full", "text-left", "text-slate-500", "hover:bg-slate-400", "hover:text-white", "p-2", "rounded-lg", "focus:outline-none");
                     name.textContent = matched[i];
