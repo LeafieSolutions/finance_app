@@ -13,7 +13,8 @@ Register
         <div>
             <label for="username" class="block text-slate-500">Username</label>
             <input type="text" name="username" id="username" placeholder="Enter your username"
-                class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full">
+                class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full" autocomplete="off">
+            <p id="displayUserNameError" class="hidden text-red-400"></p>
         </div>
         <div>
             <label for="password" class="block text-slate-500">Password</label>
@@ -46,10 +47,38 @@ Register
             const confirm_password = document.querySelector("#confirm_password");
             const submitButton = document.querySelector("#submitButton");
             const displayError = document.querySelector("#displayError");
+            let displayUserNameError = document.querySelector("#displayUserNameError");
             let passwordEyeImage = document.querySelector("#passwordEyeImage");
             let confirmEyeImage = document.querySelector("#confirmEyeImage");
             const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
             const passwordPattern = /^\S{6,}$/;
+
+            async function getUser() {
+                let url = `/api/register?username=${username.value}`;
+                let response = await fetch(url);
+                let result = await response.json();
+                console.log(result);
+            }
+
+            username.addEventListener("keyup", () => {
+                if (/\s+/.test(username.value)) {
+                    displayUserNameError.textContent = 'Username cannot contain spaces';
+                    displayUserNameError.classList.remove("hidden");
+                } else if (/^[0-9]+/.test(username.value)) {
+                    displayUserNameError.textContent = 'Username should start with a letter';
+                    displayUserNameError.classList.remove("hidden");
+                } else if (!/^\S{4,}$/) {
+                    displayUserNameError.textContent = 'Username should be at least 4 characters long';
+                    displayUserNameError.classList.remove("hidden");
+                } else if (/^\S{4,}$/) {
+                    displayUserNameError.textContent = '';
+                    displayUserNameError.classList.add("hidden");
+                    getUser();
+                } else {
+                    displayUserNameError.textContent = '';
+                    displayUserNameError.classList.add("hidden");
+                }
+            });
 
             async function register() {
                 let url = `/api/register?username=${username.value}&password=${password.value}`;

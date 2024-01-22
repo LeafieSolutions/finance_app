@@ -109,7 +109,7 @@ where value is that (pasted) value, without any space immediately before or afte
         register.html
         ```
 
-- #### /api/register/username_exists
+- #### /api/register?username=<string:username>
     - GET
         - null username
         ```json
