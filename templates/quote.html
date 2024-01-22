@@ -9,10 +9,6 @@ Quote
     <p class="text-center font-bold text-xl">Quote Share Price</p>
     <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
     <form id="quoteForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
-        {% if company_name %}
-        <p>{{ company_name }}</p>
-        <p>{{ price }}</p>
-        {% endif %}
         <div class="w-full relative">
             <label for="company_name" class="block text-slate-500 mb-2">Company</label>
             <input type="text" name="company_name" id="company_name" placeholder="Input company name"
@@ -81,7 +77,19 @@ Quote
             if (names) {
                 checkNames();
             }
-        })
+        });
+
+        async function getQuoteResponse() {
+                let url = `/api/quote?company_name=${company_name.value}`;
+                response = await fetch(url);
+                let quoteResponse = await response.json();
+
+                if (quoteResponse.flag === "error") {
+                    // failed to fetch quote
+                } else if (quoteResponse.flag === "success") {
+                    // successfully fetched quote
+                }
+            }
 
         submitButton.addEventListener('click', () => {
             let validName = false;
@@ -103,13 +111,6 @@ Quote
                 errorMessage.textContent = "Please enter a valid company name";
                 errorMessage.classList.add("text-red-500");
                 listNames.appendChild(errorMessage);
-            }
-
-            async function getQuoteResponse() {
-                names = await fetch('/data/quote/');
-                names = await names.json();
-
-                console.log(names);
             }
 
             getQuoteResponse();
