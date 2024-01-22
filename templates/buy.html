@@ -5,132 +5,135 @@ Buy
 {% endblock %}
 
 {% block main %}
-<div class="w-full flex flex-col items-center gap-10 p-2 relative">
+<div class="w-full flex flex-col items-center gap-10 p-2">
+    <div id="displayBuyResponse" class="bg-slate-400 bg-opacity-50 w-full h-screen absolute top-0 left-0 z-10 flex items-center hidden justify-center"></div>
     <p class="text-center font-bold text-xl">Buy Shares</p>
-    <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
-    <form class="flex flex-col justify-center items-center gap-10 w-2/3" id="buyForm">
-        <div class="w-full relative">
-            <label for="company_name" class="block text-slate-500 mb-2">Company</label>
-            <input type="text" name="company_name" id="company_name" placeholder="Input company name"
-                class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                required autocomplete="off">
-            <div id="displayNames"
-                class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
+    <div class=" relative w-full flex flex-col items-center gap-10 p-2">
+        <a href="/" class="absolute left-10"><img src="../assets/icons/back.svg" alt="back"></a>
+        <form id="buyForm" class="flex flex-col justify-center items-center gap-10 w-2/3 sm:w-3/5">
+            <div class="w-full relative">
+                <label for="company_name" class="block text-slate-500 mb-2">Company</label>
+                <input type="text" name="company_name" id="company_name" placeholder="Input company name"
+                    class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
+                    required autocomplete="off">
+                <div id="displayNames"
+                    class="bg-slate-200 px-2 overflow-auto flex flex-col items-start rounded-b-lg shadow-sm shadow-slate-800">
+                </div>
+                <div id="displayError" class="hidden">
+                    <p class="text-red-400">Please enter a valid company name</p>
+                </div>
             </div>
-            <div id="displayError" class="hidden">
-                <p class="text-red-400">Please enter a valid company name</p>
+            <div class="w-full">
+                <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
+                <input type="number" name="shares" id="shares" placeholder="Input number of shares"
+                    class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
+                    required min="1" autocomplete="off">
             </div>
-        </div>
-        <div class="w-full">
-            <label for="shares" class="block text-slate-500 mb-2">No. of shares</label>
-            <input type="number" name="shares" id="shares" placeholder="Input number of shares"
-                class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
-                required min="1" autocomplete="off">
-        </div>
-        <div>
-            <button id="submitButton" type="button"
-                class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Buy</button>
-        </div>
-    </form>
-    <script>
-        let company_name = document.querySelector("#company_name");
-        let listNames = document.querySelector("#displayNames");
-        let submitButton = document.querySelector("#submitButton");
-        let buyForm = document.querySelector("#buyForm");
-        const createElement = (element) => document.createElement(element);
-        let matched = [];
+            <div>
+                <button id="submitButton" type="button"
+                    class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Buy</button>
+            </div>
+        </form>
+        <script>
+            let company_name = document.querySelector("#company_name");
+            let listNames = document.querySelector("#displayNames");
+            let submitButton = document.querySelector("#submitButton");
+            let buyForm = document.querySelector("#buyForm");
+            let showQuoteResponse = document.querySelector("#displayBuyResponse");
+            const createElement = (element) => document.createElement(element);
+            let matched = [];
 
-
-        function displayNames() {
-            while (listNames.firstChild) {
-                listNames.removeChild(listNames.firstChild);
+            function displayNames() {
+                while (listNames.firstChild) {
+                    listNames.removeChild(listNames.firstChild);
+                }
+                for (let i = 0; i < 5; i++) {
+                    let name = createElement("button");
+                    name.classList.add("w-full", "text-left", "text-slate-500", "hover:bg-slate-400", "hover:text-white", "p-2", "rounded-lg", "focus:outline-none");
+                    name.textContent = matched[i];
+                    name.addEventListener('click', () => {
+                        company_name.value = matched[i];
+                        while (listNames.firstChild) {
+                            listNames.removeChild(listNames.firstChild);
+                        }
+                    });
+                    listNames.appendChild(name);
+                }
             }
-            for (let i = 0; i < 5; i++) {
-                let button = createElement("button");
-                button.setAttribute('type', 'button');
-                button.textContent = matched[i];
-                button.addEventListener('click', () => {
-                    company_name.value = matched[i];
+
+            function checkNames() {
+                matched = [];
+                let userName = company_name.value;
+                if (userName.length < 1) {
+                    return;
+                }
+                let matchName = new RegExp(userName, "i");
+                names.forEach(name => {
+                    if (matchName.test(name)) {
+                        matched.push(name);
+                    }
+                });
+                if (matched.length > 0) {
+                    displayNames();
+                } else {
                     while (listNames.firstChild) {
                         listNames.removeChild(listNames.firstChild);
                     }
-                });
-                listNames.appendChild(button);
-            }
-        }
 
-        function checkNames() {
-            matched = [];
-            let userName = company_name.value;
-            if (userName.length < 1) {
-                return;
+                }
             }
-            let matchName = new RegExp(userName, "i");
-            names.forEach(name => {
-                if (matchName.test(name)) {
-                    matched.push(name);
+
+            company_name.addEventListener('keyup', (event) => {
+                console.log(event.key);
+                if (event.key === "Backspace" || event.key === "Delete") {
+                    while (listNames.firstChild) {
+                        listNames.removeChild(listNames.firstChild);
+                    }
+                }
+                if (names) {
+                    checkNames();
                 }
             });
-            if (matched.length > 0) {
-                displayNames();
-            } else {
-                while (listNames.firstChild) {
-                    listNames.removeChild(listNames.firstChild);
+
+            submitButton.addEventListener('click', () => {
+                let validName = false;
+                names.forEach(name => {
+                    if (name === company_name.value) {
+                        validName = true;
+                        return;
+                    }
+                })
+                if (validName) {
+                    getBuyResponse();
+                } else {
+                    while (listNames.firstChild) {
+                        listNames.removeChild(listNames.firstChild);
+                    }
+                    displayError.classList.remove("hidden");
                 }
+            });
 
-            }
-        }
+            async function getBuyResponse() {
+                let url = `/api/buy?company_name=${company_name.value}&shares=${shares.value}`;
+                response = await fetch(url);
+                let buyResponse = await response.json();
 
-        company_name.addEventListener('keyup', (event) => {
-            console.log(event.key);
-            if (event.key === "Backspace" || event.key === "Delete") {
-                while (listNames.firstChild) {
-                    listNames.removeChild(listNames.firstChild);
+                if (buyResponse.flag === "error") {
+                    // failed to fetch quote
+                } else if (buyResponse.flag === "success") {
+                    // successfully fetched quote
+                    buyForm.classList.add("hidden");
+                    let success = createElement("div");
+                    success.classList.add("flex", "flex-col", "items-center", "gap-4");
+                    success.innerHTML = `
+                        <p class="text-center font-bold text-xl">Success!</p>
+                        <p class="text-center">You have successfully bought ${buyResponse.shares} shares of ${buyResponse.company_name} at $${buyResponse.price} per share.</p>
+                        <a href="/" class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Home</a>
+                    `;
+                    document.querySelector("main").appendChild(success);
                 }
             }
-            if (names) {
-                checkNames();
-            }
-        });
-
-        submitButton.addEventListener('click', () => {
-            let validName = false;
-            names.forEach(name => {
-                if (name === company_name.value) {
-                    validName = true;
-                    return;
-                }
-            })
-            if (validName) {
-                getBuyResponse();
-            } else {
-                while (listNames.firstChild) {
-                    listNames.removeChild(listNames.firstChild);
-                }
-                displayError.classList.remove("hidden");
-            }
-        });
-
-        async function getBuyResponse() {
-            let url = `/api/buy?company_name=${company_name.value}&shares=${shares.value}`;
-            response = await fetch(url);
-            let buyResponse = await response.json();
-
-            if (buyResponse.flag === "error") {
-                // failed to fetch quote
-            } else if (buyResponse.flag === "success") {
-                // successfully fetched quote
-                buyForm.classList.add("hidden");
-                let success = createElement("div");
-                success.classList.add("flex", "flex-col", "items-center", "gap-4");
-                success.innerHTML = `
-                    <p class="text-center font-bold text-xl">Success!</p>
-                    <p class="text-center">You have successfully bought ${buyResponse.shares} shares of ${buyResponse.company_name} at $${buyResponse.price} per share.</p>
-                    <a href="/" class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Home</a>
-                `;
-                document.querySelector("main").appendChild(success);
-            }
-        }
-    </script>
+        </script>
+    </div>
 </div>
 {% endblock %}
