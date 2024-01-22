@@ -6,7 +6,7 @@ Quote
 
 {% block main %}
 <div class="w-full flex flex-col items-center gap-10 p-2">
-    <div class="w-full h-screen absolute top-0 left-0 z-10 hidden"></div>
+    <div id="displayQuoteResponse" class="bg-slate-400 bg-opacity-50 w-full h-screen absolute top-0 left-0 z-10 flex items-center hidden justify-center"></div>
     <p class="text-center font-bold text-xl">Quote Share Price</p>
     <div class=" relative w-full flex flex-col items-center gap-10 p-2">
         <a href="/" class="absolute left-10"><img src="../assets/icons/back.svg" alt="back"></a>
@@ -31,6 +31,7 @@ Quote
             let listNames = document.querySelector("#displayNames");
             let submitButton = document.querySelector("#submitButton");
             let quoteForm = document.querySelector("#quoteForm");
+            let showQuoteResponse = document.querySelector("#displayQuoteResponse");
             const createElement = (element) => document.createElement(element);
             let matched = [];
 
@@ -39,8 +40,8 @@ Quote
                     listNames.removeChild(listNames.firstChild);
                 }
                 for (let i = 0; i < 5; i++) {
-                    let name = createElement("p");
-                    name.classList.add("cursor-pointer");
+                    let name = createElement("button");
+                    name.classList.add("w-full", "text-left", "text-slate-500", "hover:bg-slate-400", "hover:text-white", "p-2", "rounded-lg", "focus:outline-none");
                     name.textContent = matched[i];
                     name.addEventListener('click', () => {
                         company_name.value = matched[i];
@@ -81,7 +82,6 @@ Quote
             });
 
             async function getQuoteResponse() {
-                console.log("getQuoteResponse");
                 let url = `/api/quote?company_name=${company_name.value}`;
                 response = await fetch(url);
                 let quoteResponse = await response.json();
@@ -89,9 +89,54 @@ Quote
                 if (quoteResponse.flag === "error") {
                     // failed to fetch quote
                 } else if (quoteResponse.flag === "success") {
-                    console.log(quoteResponse);
+                    displayQuote(quoteResponse);
                 }
                 }
+
+            function displayQuote(quoteResponse) {
+                let quoteDiv = createElement("div");
+                let fullMessage = createElement("div");
+                let doneImage = createElement("img");
+                let message = createElement("p");
+                let moreMessage = createElement("p");
+                let companyName = createElement("p");
+                let price = createElement("p");
+                let dismissButton = createElement("button");
+
+                companyName.classList.add("font-bold", "text-purple-400", "inline");
+                price.classList.add("font-bold", "text-purple-400", "block");
+                message.classList.add("inline");
+                moreMessage.classList.add("inline");
+                showQuoteResponse.classList.remove("hidden");
+                quoteDiv.classList.add("p-10","rounded-lg", "flex", "flex-col", "items-center", "gap-10", "shadow-sm", "shadow-slate-800", "h-1/2", "w-2/3", "bg-white");
+                dismissButton.classList.add("bg-purple-800", "font-bold", "text-xl", "text-white", "p-2", "px-16", "rounded-xl", "sm:text-2xl", "sm:p-3", "sm:px-24");
+                quoteForm.classList.add("hidden");
+
+                companyName.textContent = quoteResponse.name;
+                console.log(quoteResponse.price);
+                price.textContent = `$${quoteResponse.price}`;
+                console.log(price.textContent);
+                message.textContent = 'A share of ';
+                moreMessage.textContent = ' is ';
+                doneImage.setAttribute("src", "../assets/icons/done.svg");
+                dismissButton.textContent = "Ok";
+
+                dismissButton.addEventListener('click', () => {
+                    showQuoteResponse.classList.add("hidden");
+                    quoteForm.classList.remove("hidden");
+                    showQuoteResponse.removeChild(showQuoteResponse.firstChild);
+                    company_name.value = "";
+                })
+
+                fullMessage.appendChild(message);
+                fullMessage.appendChild(companyName);
+                fullMessage.appendChild(moreMessage);
+                fullMessage.appendChild(price);
+                quoteDiv.appendChild(doneImage);
+                quoteDiv.appendChild(fullMessage);
+                quoteDiv.appendChild(dismissButton);
+                showQuoteResponse.appendChild(quoteDiv);
+            }
 
             submitButton.addEventListener('click', () => {
                 let validName = false;
