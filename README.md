@@ -110,6 +110,30 @@ where value is that (pasted) value, without any space immediately before or afte
         register.html
         ```
 
+- #### /api/register/username_exists
+    - GET
+        - null username
+        ```json
+        {
+            "flag": "error",
+            "reason": "null username",
+        }
+        ```
+        - username exists
+        ```json
+        {
+            "flag": "success",
+            "reason": "exist",
+        }
+        ```
+        - username does not exist
+        ```json
+        {
+            "flag": "success",
+            "reason": "not exist",
+        }
+        ```
+
 - ####  /api/register?username=<string:username>&password=<string:password>
     - GET
         - successful
@@ -424,6 +448,30 @@ where value is that (pasted) value, without any space immediately before or afte
     - GET
         ```
         "testuser"
+        ```
+
+- #### /api/register/username_exists
+    - GET
+        - null username
+        ```json
+        {
+            "flag": "error",
+            "reason": "null username",
+        }
+        ```
+        - username exists
+        ```json
+        {
+            "flag": "success",
+            "reason": "exist",
+        }
+        ```
+        - username does not exist
+        ```json
+        {
+            "flag": "success",
+            "reason": "not exist",
+        }
         ```
 
 - #### /api/user/profile/change/username?username=<string:new_username>

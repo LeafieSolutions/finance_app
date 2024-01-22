@@ -39,9 +39,11 @@ TRANS_TYPES = {
 
 # Get API url
 API_KEY = environ.get("API_KEY")
-API_URL = (
-    lambda ticker: f"https://cloud.iexapis.com/stable/stock/{url_quote(ticker)}/quote?token={API_KEY}"
-)
+
+
+def get_ticker_info(ticker):
+    """Get API url"""
+    return f"https://cloud.iexapis.com/stable/stock/{url_quote(ticker)}/quote?token={API_KEY}"
 
 
 class User:
@@ -160,7 +162,7 @@ class Company:
 
         # Contact API
         try:
-            response = get_request(API_URL(ticker), timeout=3)
+            response = get_request(get_ticker_info(ticker), timeout=3)
             response.raise_for_status()
         except RequestException:
             return render_error("API request failed", 403)

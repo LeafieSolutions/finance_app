@@ -16,7 +16,7 @@ from .helpers import (
     render_error,
     render_template,
     usd,
-    validate_cash_value,
+    validate_request_method,
     validate_username,
 )
 from .handlers import (
@@ -80,20 +80,87 @@ def login_required(func):
     return decorated_function
 
 
+@app.errorhandler(404)
+def page_not_found(err):
+    """Handle 404 errors"""
+    return render_error("Page not found", 404)
+
+
 @app.route("/api/login/authenticate")
 def login_authenticate():
     """Authenticate user"""
 
+    validate_request_method(request, "GET")
+
+    # Redirect user to homepage if already logged in
+    if session.get("user_id") is not None:
+        return redirect("/")
+
+    username = request.args.get("username")
+    password = request.args.get("password")
+
+    # Check if username and password are provided
+    if not username:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null username",
+            }
+        )
+    if not password:
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "null password",
+            }
+        )
+
+    else:
+        # Ensure username exists and password is correct
+        if (not User.username_exists(username)) or (
+            not check_password_hash(User.get_hash(username), password)
+        ):
+            return jsonify(
+                {
+                    "flag": "error",
+                    "reason": "invalid",
+                }
+            )
+
+        # Remember which user has logged in
+        session["user_id"] = User.get_id(username)
+        session["username"] = username
+        session["hash"] = generate_password_hash(password)
+
+        return jsonify(
+            {
+                "flag": "success",
+            }
+        )
+
+
+@app.route("/login", methods=["GET"])
+def render_login_page():
+    """Log user in"""
+
+    validate_request_method(request, "GET")
+
+    # Redirect user to homepage if already logged in
+    if session.get("user_id") is not None:
+        return redirect("/")
+
+    return render_template("login.html")
+
+
+@app.route("/api/register/username_exists")
+def username_exists():
+    """Check if username exists"""
+
     # User reached route via GET (as by clicking a link or via redirect)
     if request.method == "GET":
-        # Redirect user to homepage if already logged in
-        if session.get("user_id") is not None:
-            return redirect("/")
-
         username = request.args.get("username")
-        password = request.args.get("password")
 
-        # Check if username and password are provided
+        # Check if username is provided
         if not username:
             return jsonify(
                 {
@@ -101,52 +168,22 @@ def login_authenticate():
                     "reason": "null username",
                 }
             )
-        if not password:
-            return jsonify(
-                {
-                    "flag": "error",
-                    "reason": "null password",
-                }
-            )
 
-        else:
-            # Ensure username exists and password is correct
-            if (not User.username_exists(username)) or (
-                not check_password_hash(User.get_hash(username), password)
-            ):
-                return jsonify(
-                    {
-                        "flag": "error",
-                        "reason": "invalid",
-                    }
-                )
-
-            # Remember which user has logged in
-            session["user_id"] = User.get_id(username)
-            session["username"] = username
-            session["hash"] = generate_password_hash(password)
-
+        # Check if username exists
+        if User.username_exists(username):
             return jsonify(
                 {
                     "flag": "success",
+                    "answer": "exist",
                 }
             )
-
-    else:
-        return render_error("Invalid request method", 403)
-
-
-@app.route("/login", methods=["GET"])
-def render_login_page():
-    """Log user in"""
-
-    # User reached route via GET (as by clicking a link or via redirect)
-    if request.method == "GET":
-        # Redirect user to homepage if already logged in
-        if session.get("user_id") is not None:
-            return redirect("/")
-
-        return render_template("login.html")
+        else:
+            return jsonify(
+                {
+                    "flag": "success",
+                    "answer": "not exist",
+                }
+            )
 
     else:
         return render_error("Invalid request method", 403)
@@ -660,6 +697,9 @@ def get_profile_password():
                     "reason": "incorrect old_password",
                 }
             )
+
+        # Modify hash in session
+        session["hash"] = generate_password_hash(new_password)
 
         # Update password in database
         User.update_password(session["user_id"], generate_password_hash(new_password))

@@ -33,6 +33,12 @@ def render_error(message, code=400):
     return render_template("error.html", top=code, bottom=escape(message)), code
 
 
+def validate_request_method(request, method):
+    """Validate request method"""
+    if request.method != method:
+        return render_error("Invalid request method", 405), 405
+
+
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
