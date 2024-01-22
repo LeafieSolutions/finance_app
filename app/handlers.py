@@ -25,6 +25,9 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 # Configure CS50 Library to use SQLite database
 DB = SQL(f"sqlite:///{DATA_DIR / 'finance.db'}")
 
+# Logs path
+LOGS_PATH = DATA_DIR / "app.logs"
+
 
 # Get company names from database
 COMPANY_NAMES = [
@@ -41,7 +44,7 @@ TRANS_TYPES = {
 API_KEY = environ.get("API_KEY")
 
 
-def get_ticker_info(ticker):
+def iex_ticker_url(ticker):
     """Get API url"""
     return f"https://cloud.iexapis.com/stable/stock/{url_quote(ticker)}/quote?token={API_KEY}"
 
@@ -162,18 +165,21 @@ class Company:
 
         # Contact API
         try:
-            response = get_request(get_ticker_info(ticker), timeout=3)
+            response = get_request(iex_ticker_url(ticker), timeout=3)
+
+            # Raise for status
             response.raise_for_status()
-        except RequestException:
-            return render_error("API request failed", 403)
+
+        except RequestException as err:
+            raise RequestException(err.response.text) from err
 
         # Parse response
         try:
             quote = response.json()
             return float(quote["latestPrice"])
 
-        except (KeyError, TypeError, ValueError):
-            return render_error("Invalid response", 403)
+        except (KeyError, TypeError, ValueError) as err:
+            raise RequestException("Unable to parse IEX API response") from err
 
 
 class Transaction:
