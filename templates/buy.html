@@ -8,7 +8,7 @@ Buy
 <div class="w-full flex flex-col items-center gap-10 p-2 relative">
     <p class="text-center font-bold text-xl">Buy Shares</p>
     <a href="/" class="absolute left-10 top-10"><img src="../assets/icons/back.svg" alt="back"></a>
-    <form class="flex flex-col justify-center items-center gap-10 w-2/3" id="quoteForm">
+    <form class="flex flex-col justify-center items-center gap-10 w-2/3" id="buyForm">
         <div class="w-full relative">
             <label for="company_name" class="block text-slate-500 mb-2">Company</label>
             <input type="text" name="company_name" id="company_name" placeholder="Input company name"
@@ -36,7 +36,7 @@ Buy
         let company_name = document.querySelector("#company_name");
         let listNames = document.querySelector("#displayNames");
         let submitButton = document.querySelector("#submitButton");
-        let quoteForm = document.querySelector("#quoteForm");
+        let buyForm = document.querySelector("#buyForm");
         const createElement = (element) => document.createElement(element);
         let matched = [];
 
@@ -102,16 +102,35 @@ Buy
                 }
             })
             if (validName) {
-                quoteForm.setAttribute('action', '/buy');
-                quoteForm.setAttribute('method', 'POST');
-                submitButton.setAttribute('type', 'submit');
+                getBuyResponse();
             } else {
                 while (listNames.firstChild) {
                     listNames.removeChild(listNames.firstChild);
                 }
                 displayError.classList.remove("hidden");
             }
-        })
+        });
+
+        async function getBuyResponse() {
+            let url = `/api/buy?company_name=${company_name.value}&shares=${shares.value}`;
+            response = await fetch(url);
+            let buyResponse = await response.json();
+
+            if (buyResponse.flag === "error") {
+                // failed to fetch quote
+            } else if (buyResponse.flag === "success") {
+                // successfully fetched quote
+                buyForm.classList.add("hidden");
+                let success = createElement("div");
+                success.classList.add("flex", "flex-col", "items-center", "gap-4");
+                success.innerHTML = `
+                    <p class="text-center font-bold text-xl">Success!</p>
+                    <p class="text-center">You have successfully bought ${buyResponse.shares} shares of ${buyResponse.company_name} at $${buyResponse.price} per share.</p>
+                    <a href="/" class="bg-purple-800 font-bold text-xl p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24 text-white">Home</a>
+                `;
+                document.querySelector("main").appendChild(success);
+            }
+        }
     </script>
 </div>
 {% endblock %}
