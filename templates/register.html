@@ -48,6 +48,7 @@ Register
             const submitButton = document.querySelector("#submitButton");
             const displayError = document.querySelector("#displayError");
             let displayUserNameError = document.querySelector("#displayUserNameError");
+            let displayConfirmError = document.querySelector("#displayConfirmError");
             let passwordEyeImage = document.querySelector("#passwordEyeImage");
             let confirmEyeImage = document.querySelector("#confirmEyeImage");
             const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
@@ -84,8 +85,8 @@ Register
                 let response = await fetch(url);
                 let result = await response.json();
                 if (result.flag === "error") {
-                    displayError.textContent = 'Username already exists';
-                    displayError.classList.remove("hidden");
+                    displayUserNameError.textContent = 'Username already exists';
+                    displayUserNameError.classList.remove("hidden");
                 } else if (result.flag === "success") {
                     window.location.href = "/";
                 }
