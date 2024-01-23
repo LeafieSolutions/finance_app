@@ -47,13 +47,16 @@ Sell
             let noSharesError = document.querySelector("#noSharesError");
             const createElement = (element) => document.createElement(element);
             let companyNames;
+            let companyShares;
 
             async function getNames() {
-                let url = "/api/user/company_names";
-                response = await fetch(url);
-                companyNames = await response.json();
+                let url = "/api/user/company_shares";
+                let sharesResponse = await fetch(url);
+                companyShares = await sharesResponse.json();
+                companyNames = Object.keys(companyShares);
 
                 if (companyNames.length > 0) {
+                    console.log(companyShares[`${companyNames[0]}`])
                     enableForm();
                 } else {
                     loading_sign.classList.add("hidden");
@@ -65,10 +68,15 @@ Sell
 
             function enableForm() {
                 company_name.disabled = false;
-                shares.disabled = false;
                 submitButton.disabled = false;
                 loading_sign.classList.add("hidden");
                 }
+
+            function enableShares() {
+                shares.disabled = false;
+                console.log(companyShares[`${company_name.value}`])
+                shares.setAttribute("max", companyShares[`${company_name.value}`]);
+            }
 
             function addText (text) {
                 if (text === "add") {
@@ -94,6 +102,7 @@ Sell
                         }
                     });
                     listNames.appendChild(name);
+                    enableShares();
                 }
             }
 

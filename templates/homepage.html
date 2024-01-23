@@ -77,6 +77,8 @@ Home
                 price.classList.add("text-end");
                 shares.classList.add("text-end");
                 total.classList.add("text-end");
+                i % 2 ? row.classList.add('bg-gray-300') : row.classList.add('bg-none');
+
                 name.textContent = summary.state[i].name;
                 ticker.textContent = summary.state[i].ticker;
                 price.textContent = `$${summary.state[i].price}`;
