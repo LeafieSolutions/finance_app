@@ -68,9 +68,10 @@ History
                 timestamp.textContent = history[i].timestamp;
                 name.textContent = history[i].name;
                 ticker.textContent = history[i].ticker;
-                price.textContent = `$${history[i].price}`;
+                price.textContent = `$${history[i].price.toFixed(2)}`;
                 shares.textContent = history[i].shares;
-                total.textContent = `$${history[i].total}`;
+                total.textContent = `$${history[i].total.toFixed(2)}`;
+
                 row.appendChild(timestamp);
                 row.appendChild(name);
                 row.appendChild(ticker);

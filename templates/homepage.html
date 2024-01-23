@@ -62,10 +62,10 @@ Home
         getSummary();
 
         function displaySummary (summary) {
-            displayCash.textContent = `$${summary.cash}`;
-            displayStocksTotal.textContent = `$${summary.stocks_total}`;
-            displayPortfolioTotal.textContent = `$${summary.portfolio_total}`;
-            displaySharesTotal.textContent = `$${summary.stocks_total}`;
+            displayCash.textContent = `$${summary.cash.toFixed(2)}`;
+            displayStocksTotal.textContent = `$${summary.stocks_total.toFixed(2)}`;
+            displayPortfolioTotal.textContent = `$${summary.portfolio_total.toFixed(2)}`;
+            displaySharesTotal.textContent = `$${summary.stocks_total.toFixed(2)}`;
             for (let i = 0; i < summary.state.length; i++) {
                 let row = createElement("tr");
                 let name = createElement("td");
@@ -81,9 +81,9 @@ Home
 
                 name.textContent = summary.state[i].name;
                 ticker.textContent = summary.state[i].ticker;
-                price.textContent = `$${summary.state[i].price}`;
+                price.textContent = `$${summary.state[i].price.toFixed(2)}`;
                 shares.textContent = summary.state[i].shares;
-                total.textContent = `$${summary.state[i].total}`;
+                total.textContent = `$${summary.state[i].total.toFixed(2)}`;
                 row.appendChild(name);
                 row.appendChild(ticker);
                 row.appendChild(price);

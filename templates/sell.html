@@ -99,10 +99,10 @@ Sell
                         company_name.value = matched[i];
                         while (listNames.firstChild) {
                             listNames.removeChild(listNames.firstChild);
+                            enableShares();
                         }
                     });
                     listNames.appendChild(name);
-                    enableShares();
                 }
             }
 
