@@ -29,10 +29,11 @@ Sell
                 <input type="number" name="shares" id="shares" placeholder="Input number of shares"
                     class="p-2 w-full outline-none border border-purple-600 bg-slate-300 rounded-lg focus:border-purple-800 focus:border-2 focus:bg-slate-400 placeholder:text-white"
                     required min="1" autocomplete="off" disabled>
+                <p class="hidden text-red-400" id="noSharesError"></p>
             </div>
             <div>
                 <button id="submitButton" type="button"
-                    class="bg-purple-800 font-bold text-xl text-white p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24">Sell</button>
+                    class="bg-purple-800 font-bold text-xl text-white p-2 px-16 rounded-xl sm:text-2xl sm:p-3 sm:px-24" disabled>Sell</button>
             </div>
         </form>
         <script>
@@ -43,6 +44,7 @@ Sell
             let sellForm = document.querySelector("#sellForm");
             let showSellResponse = document.querySelector("#displaySellResponse");
             let loading_sign = document.querySelector("#loadingSign");
+            let noSharesError = document.querySelector("#noSharesError");
             const createElement = (element) => document.createElement(element);
             let companyNames;
 
@@ -51,13 +53,20 @@ Sell
                 response = await fetch(url);
                 companyNames = await response.json();
 
-                enableForm();
+                if (companyNames.length > 0) {
+                    enableForm();
+                } else {
+                    loading_sign.classList.add("hidden");
+                    noSharesError.textContent = "You have no shares to sell";
+                    noSharesError.classList.remove("hidden");
+                }
             }
             getNames();
 
             function enableForm() {
                 company_name.disabled = false;
                 shares.disabled = false;
+                submitButton.disabled = false;
                 loading_sign.classList.add("hidden");
                 }
 
@@ -160,10 +169,13 @@ Sell
                 dismissButton.textContent = "Ok";
 
                 dismissButton.addEventListener('click', () => {
-                    showSellResponse.classList.add("hidden");
                     sellForm.classList.remove("hidden");
-                    showSellResponse.removeChild(showSellResponse.firstChild);
+                    while (showSellResponse.firstChild) {
+                        showSellResponse.removeChild(showSellResponse.firstChild);
+                    }
+                    // showSellResponse.classList.add("hidden");
                     company_name.value = "";
+                    shares.value = "";
                 });
                 while (showSellResponse.firstChild) {
                     showSellResponse.removeChild(showSellResponse.firstChild);

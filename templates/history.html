@@ -63,6 +63,7 @@ History
                 shares.classList.add("text-center");
                 total.classList.add("text-end");
                 timestamp.classList.add("text-start");
+                i % 2 ? row.classList.add('bg-gray-200') : row.classList.add('bg-none');
 
                 timestamp.textContent = history[i].timestamp;
                 name.textContent = history[i].name;

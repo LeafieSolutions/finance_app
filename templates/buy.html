@@ -131,6 +131,7 @@ Buy
                     validShares = true;
                 }
                 if (validName && validShares) {
+                    loading();
                     getBuyResponse();
                 } else {
                     while (listNames.firstChild) {
@@ -138,6 +139,13 @@ Buy
                     }
                 }
             });
+
+            function loading () {
+                let loadingSign = createElement('p');
+                loadingSign.classList.add("loading", "loading-ring", "loading-lg");
+                showBuyResponse.classList.remove("hidden");
+                showBuyResponse.appendChild(loadingSign);
+            }
 
             async function getBuyResponse() {
                 let url = `/api/buy?company_name=${company_name.value}&shares=${shares.value}`;
