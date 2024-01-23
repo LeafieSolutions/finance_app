@@ -72,6 +72,14 @@ Profile
                 let passwordEyeImage = document.querySelector("#passwordEyeImage");
                 let confirmEyeImage = document.querySelector("#confirmEyeImage");
                 let oldEyeImage = document.querySelector("#oldEyeImage");
+                let userName;
+
+                async function getUserName () {
+                    url = `/api/user/profile/username`;
+                    const response = await fetch(url);
+                    userName = await response.json();
+                }
+                getUserName();
 
                 function addText (text) {
                     if (text === "add") {
@@ -104,6 +112,9 @@ Profile
                 }
 
                 async function checkUsername () {
+                    if (username.value === userName) {
+                        return;
+                    }
                     url = `/api/register/username_exists?username=${username.value}`;
                     const response = await fetch(url);
                     const result = await response.json();
@@ -116,6 +127,9 @@ Profile
                 }
 
                 async function updateUsername () {
+                    if (username.value === userName) {
+                        return;
+                    }
                     url = `/api/user/profile/change/username?new_username=${username.value}`;
                     const response = await fetch(url);
                     const result = await response.json();
