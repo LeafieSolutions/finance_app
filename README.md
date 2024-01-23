@@ -167,6 +167,14 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
+        - invalid password
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid password",
+        }
+        ```
+
         - username already exists
         ```json
         {
@@ -539,6 +547,14 @@ where value is that (pasted) value, without any space immediately before or afte
         {
             "flag": "error",
             "reason": "null new_password",
+        }
+        ```
+
+        - invalid new password
+        ```json
+        {
+            "flag": "error",
+            "reason": "invalid password",
         }
         ```
 

@@ -65,3 +65,8 @@ def validate_cash_value(value):
 def validate_username(username):
     """Parse username"""
     return regex_match(r"^[a-zA-Z][a-z_A-Z0-9]{3,}$", username)
+
+
+def validate_password(password):
+    """Parse password"""
+    return regex_match(r"/^\S{6,}$/", password)

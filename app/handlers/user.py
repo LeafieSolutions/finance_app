@@ -13,6 +13,12 @@ class User:
     """Class to handle user data"""
 
     @staticmethod
+    def id_exists(user_id: int):
+        """Check if user id already exists in the database"""
+        user = execute_sql("SELECT id FROM users WHERE id = ?", user_id)
+        return len(user) == 1
+
+    @staticmethod
     def username_exists(username: str):
         """Check if username already exists in the database"""
         user = execute_sql("SELECT * FROM users WHERE username = ?", username)

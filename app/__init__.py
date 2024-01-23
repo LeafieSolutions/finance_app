@@ -17,6 +17,7 @@ from .helpers import (
     render_template,
     usd,
     validate_request_method,
+    validate_password,
     validate_username,
 )
 
@@ -71,8 +72,10 @@ def login_required(func):
 
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect("/login")
+        if (session.get("user_id") is None) or (
+            not User.id_exists(session.get("user_id"))
+        ):
+            return redirect("/logout")
         return func(*args, **kwargs)
 
     return decorated_function
@@ -225,6 +228,15 @@ def register_user():
             {
                 "flag": "error",
                 "reason": "invalid username",
+            }
+        )
+
+    # Validate new password
+    if not validate_password(password):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid password",
             }
         )
 
@@ -578,7 +590,7 @@ def get_username():
 
 @application.route("/api/user/profile/change/username")
 @login_required
-def change_profile():
+def change_profile_username():
     """Change profile username"""
     validate_request_method(request, "GET")
 
@@ -634,7 +646,7 @@ def change_profile():
 
 @application.route("/api/user/profile/change/password")
 @login_required
-def get_profile_password():
+def change_profile_password():
     """Get profile password"""
 
     validate_request_method(request, "GET")
@@ -655,6 +667,15 @@ def get_profile_password():
             {
                 "flag": "error",
                 "reason": "null new_password",
+            }
+        )
+
+    # Validate new password
+    if not validate_password(new_password):
+        return jsonify(
+            {
+                "flag": "error",
+                "reason": "invalid password",
             }
         )
 
