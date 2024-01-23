@@ -19,6 +19,7 @@ Profile
                     class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
                     required pattern="[a-zA-Z][a-z_A-Z0-9]+" value="{{username}}">
                 <p id="displayUserNameError" class="hidden text-red-400"></p>
+                <p id="displayUserNameSuccess" class="hidden text-green-400"></p>
             </div>
             <div class="flex items-center justify-center">
                 <button type="button" id="updateUsernameButton"
@@ -63,6 +64,7 @@ Profile
                 const updateUsernameButton = document.querySelector("#updateUsernameButton");
                 const updatePasswordButton = document.querySelector("#updatePasswordButton");
                 let displayUserNameError = document.querySelector("#displayUserNameError");
+                let displayUserNameSuccess = document.querySelector("#displayUserNameSuccess");
                 let passwordEyeImage = document.querySelector("#passwordEyeImage");
                 let confirmEyeImage = document.querySelector("#confirmEyeImage");
                 let oldEyeImage = document.querySelector("#oldEyeImage");
@@ -77,71 +79,91 @@ Profile
                     }
                 };
 
-            function toggleVisibility (input) {
-                let inputToggle;
-                let eyeImage;
-                if (input === "password") {
-                    inputToggle = password;
-                    eyeImage = passwordEyeImage;
-                } else if (input === "confirm_password") {
-                    inputToggle = confirm_password;
-                    eyeImage = confirmEyeImage;
-                } else if (input === "old_password") {
-                    inputToggle = old_password;
-                    eyeImage = oldEyeImage;
+                function toggleVisibility (input) {
+                    let inputToggle;
+                    let eyeImage;
+                    if (input === "password") {
+                        inputToggle = password;
+                        eyeImage = passwordEyeImage;
+                    } else if (input === "confirm_password") {
+                        inputToggle = confirm_password;
+                        eyeImage = confirmEyeImage;
+                    } else if (input === "old_password") {
+                        inputToggle = old_password;
+                        eyeImage = oldEyeImage;
+                    }
+                    if (inputToggle.type === "password") {
+                        inputToggle.type = "text";
+                        eyeImage.src = "../assets/icons/eye_closed.svg";
+                    } else {
+                        inputToggle.type = "password";
+                        eyeImage.src = "../assets/icons/eye_open.svg";
+                    }
                 }
-                if (inputToggle.type === "password") {
-                    inputToggle.type = "text";
-                    eyeImage.src = "../assets/icons/eye_closed.svg";
-                } else {
-                    inputToggle.type = "password";
-                    eyeImage.src = "../assets/icons/eye_open.svg";
-                }
-            }
 
-            async function checkUsername () {
-                url = `/api/register/username_exists?username=${username.value}`;
-                const response = await fetch(url);
-                const result = await response.json();
-                if (result.reason === "exist") {
-                    console.log("exist");
-                } else {
-                    console.log("not exist");
+                async function checkUsername () {
+                    url = `/api/register/username_exists?username=${username.value}`;
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    displayUserNameError.classList.remove("hidden");
+                    if (result.answer === "exist") {
+                        displayUserNameError.textContent = 'Username already exists';
+                    } else {
+                        displayUserNameError.textContent = 'Username available';
+                    }
                 }
-            }
 
-            function checkFormat () {
-                if (/\s+/.test(username.value)) {
-                    displayUserNameError.textContent = 'Username cannot contain spaces';
-                    displayUserNameError.classList.remove("hidden");
-                } else if (/^[0-9]+/.test(username.value)) {
-                    displayUserNameError.textContent = 'Username should start with a letter';
-                    displayUserNameError.classList.remove("hidden");
-                } else if (!/^\S{4,}$/) {
-                    displayUserNameError.textContent = 'Username should be at least 4 characters long';
-                    displayUserNameError.classList.remove("hidden");
-                } else if (/^\S{4,}$/) {
+                async function updateUsername () {
+                    url = `/api/user/profile/change/username?username=${username.value}`;
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    console.log(username.value);
+                    console.log(result);
+                    console.log(url);
+                    if (result.answer === "success") {
+                        // successfully updated username
+                        displayUserNameSuccess.textContent = 'Username updated successfully';
+                        displayUserNameSuccess.classList.remove("hidden");
+                    } else {
+                        displayUserNameError.textContent = 'Username already exists';
+                        displayUserNameError.classList.remove("hidden");
+                    }
+                }
+
+                function checkFormat (sender) {
+                    if (username.value === "") {
+                        displayUserNameError.textContent = 'Username cannot be empty';
+                        displayUserNameError.classList.remove("hidden");
+                    } else if (/\s+/.test(username.value)) {
+                        displayUserNameError.textContent = 'Username cannot contain spaces';
+                        displayUserNameError.classList.remove("hidden");
+                    } else if (/^[0-9]+/.test(username.value)) {
+                        displayUserNameError.textContent = 'Username should start with a letter';
+                        displayUserNameError.classList.remove("hidden");
+                    } else if (!/^\S{4,}$/.test(username.value)) {
+                        displayUserNameError.textContent = 'Username should be at least 4 characters long';
+                        displayUserNameError.classList.remove("hidden");
+                    } else if (/^\S{4,}$/.test(username.value)) {
+                        displayUserNameError.textContent = '';
+                        displayUserNameError.classList.add("hidden");
+                        checkUsername();
+                        sender === 'click' ? updateUsername() : null;
+                    } else {
+                        displayUserNameError.textContent = '';
+                        displayUserNameError.classList.add("hidden");
+                    }}
+
+                username.addEventListener("keyup", () => {
                     displayUserNameError.textContent = '';
                     displayUserNameError.classList.add("hidden");
-                    checkUsername();
-                } else {
+                    checkFormat('keyup')
+                });
+
+                updateUsernameButton.addEventListener("click", () => {
                     displayUserNameError.textContent = '';
                     displayUserNameError.classList.add("hidden");
-                }}
-
-            username.addEventListener("keyup", () => {
-                checkFormat()
-            });
-
-            updateUsernameButton.addEventListener("click", () => {
-                if (username.value === "") {
-                    displayUserNameError.textContent = 'Username cannot be empty';
-                    displayUserNameError.classList.remove("hidden");
-                } else {
-                    checkFormat();
-                }
-            
-            })
+                    checkFormat('click');
+                });
 
             </script>
         </div>
