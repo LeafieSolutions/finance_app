@@ -62,7 +62,8 @@ Buy
                 while (listNames.firstChild) {
                     listNames.removeChild(listNames.firstChild);
                 }
-                for (let i = 0; i < 5; i++) {
+                let length = matched.length > 5 ? 5 : matched.length;
+                for (let i = 0; i < length; i++) {
                     let name = createElement("button");
                     name.classList.add("w-full", "text-left", "text-slate-500", "hover:bg-slate-400", "hover:text-white", "p-2", "rounded-lg", "focus:outline-none");
                     name.textContent = matched[i];
@@ -154,10 +155,8 @@ Buy
 
                 if (buyResponse.flag === "error") {
                     // failed to fetch Buy
-                    if (buyResponse.error === "not enough cash") {
-                        // not enough cash
-                    } else if (buyResponse.error === "not enough shares") {
-                        // not enough shares
+                    if (buyResponse.reason === "insufficient cash") {
+                        displayBuy(buyResponse);
                     }
                 } else if (buyResponse.flag === "success") {
                     // successfully fetched Buy
@@ -171,21 +170,66 @@ Buy
                 let doneImage = createElement("img");
                 let message = createElement("p");
                 let moreMessage = createElement("p");
+                let muchMessage = createElement("p");
                 let companyName = createElement("p");
-                let shares = createElement("p");
+                let sharesValue = createElement("p");
+                let remainingCash = createElement("p");
                 let dismissButton = createElement("button");
 
-                companyName.classList.add("font-bold", "text-purple-400", "block");
-                shares.classList.add("font-bold", "text-purple-400", "inline");
+                companyName.classList.add("font-bold", "text-purple-400", "inline");
+                sharesValue.classList.add("font-bold", "text-purple-400", "inline");
+                remainingCash.classList.add("font-bold", "text-purple-400", "inline");
                 message.classList.add("inline");
                 moreMessage.classList.add("inline");
+                muchMessage.classList.add("inline");
                 showBuyResponse.classList.remove("hidden");
                 buyDiv.classList.add("p-10","rounded-lg", "flex", "flex-col", "items-center", "gap-10", "shadow-sm", "shadow-slate-800", "h-1/2", "w-2/3", "bg-white");
                 dismissButton.classList.add("bg-purple-800", "font-bold", "text-xl", "text-white", "p-2", "px-16", "rounded-xl", "sm:text-2xl", "sm:p-3", "sm:px-24");
                 buyForm.classList.add("hidden");
 
+                try {
+                    if (buyResponse.reason === "insufficient cash") {
+                        message.textContent = "You don't have enough cash to buy ";
+                        moreMessage.textContent = ` ${shares.value === 1 ? "share" : "shares"} of `;
+                        sharesValue.textContent = shares.value;
+                        companyName.textContent = company_name.value;
+                        remainingCash.textContent = ` $${buyResponse.cash.toFixed(2)} `;
+                        muchMessage.textContent = ` Your balance is `;
+                        dismissButton.textContent = "Ok";
+
+                        dismissButton.addEventListener('click', () => {
+                            showBuyResponse.classList.add("hidden");
+                            buyForm.classList.remove("hidden");
+                            showBuyResponse.removeChild(showBuyResponse.firstChild);
+                            company_name.value = "";
+                            shares.value = "";
+                        });
+
+                        while (showBuyResponse.firstChild) {
+                            showBuyResponse.removeChild(showBuyResponse.firstChild);
+                        }
+
+                        fullMessage.appendChild(message);
+                        fullMessage.appendChild(sharesValue);
+                        fullMessage.appendChild(moreMessage);
+                        fullMessage.appendChild(companyName);
+                        fullMessage.appendChild(muchMessage);
+                        fullMessage.appendChild(remainingCash);
+                        buyDiv.appendChild(fullMessage);
+                        buyDiv.appendChild(dismissButton);
+                        showBuyResponse.appendChild(buyDiv);
+                        return;
+                    }
+                } catch (error) {
+                    // ignore error
+                }
+
+                while (showBuyResponse.firstChild) {
+                    showBuyResponse.removeChild(showBuyResponse.firstChild);
+                }
+
                 companyName.textContent = company_name.value;
-                shares.textContent = buyResponse.shares;
+                sharesValue.textContent = buyResponse.shares;
                 message.textContent = "You've successfully bought ";
                 moreMessage.textContent = ` ${buyResponse.shares === 1 ? "share" : "shares"} of `;
                 doneImage.setAttribute("src", "../assets/icons/done.svg");
@@ -197,10 +241,14 @@ Buy
                     showBuyResponse.removeChild(showBuyResponse.firstChild);
                     company_name.value = "";
                     shares.value = "";
-                })
+                });
+
+                while (showBuyResponse.firstChild) {
+                    showBuyResponse.removeChild(showBuyResponse.firstChild);
+                }
 
                 fullMessage.appendChild(message);
-                fullMessage.appendChild(shares);
+                fullMessage.appendChild(sharesValue);
                 fullMessage.appendChild(moreMessage);
                 fullMessage.appendChild(companyName);
                 buyDiv.appendChild(doneImage);
