@@ -454,15 +454,6 @@ def render_buy_page():
     return render_template("buy.html")
 
 
-@application.route("/api/user/company_names")
-@login_required
-def get_user_companies():
-    """Get user companies"""
-
-    validate_request_method(request, "GET")
-    return jsonify(State.get_companies(session["user_id"]))
-
-
 @application.route("/api/user/company_shares")
 @login_required
 def get_user_shares():

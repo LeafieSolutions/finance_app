@@ -348,14 +348,6 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
 
-- #### /api/user/company_names
-    - GET
-        ```json
-        [
-            "Apple Inc",
-            "Tesla Inc"
-        ]
-        ```
 
 - #### /api/sell?company_name=<string:company_name>&shares=<int:shares>
     - GET

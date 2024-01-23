@@ -30,7 +30,16 @@ def render_error(message, code=400):
             s = s.replace(old, new)
         return s
 
-    return render_template("error.html", top=code, bottom=escape(message)), code
+    return (
+        render_template(
+            "error.html",
+            **{
+                "error_code": code,
+                "message": escape(message),
+            },
+        ),
+        code,
+    )
 
 
 def validate_request_method(request, method):
@@ -47,10 +56,10 @@ def usd(value):
 def validate_cash_value(value):
     """Validate cash value"""
     if not value:
-        return render_error("Please provide cash value", 403)
+        return render_error("Please provide cash value", 403), 403
 
     if (not value.isdigit()) or (int(value) < 0):
-        return render_error("Value must be an integer more than zero", 403)
+        return render_error("Value must be an integer more than zero", 403), 403
 
 
 def validate_username(username):
