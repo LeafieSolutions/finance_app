@@ -57,6 +57,7 @@ Home
             let url = `/api/user/summary`;
             let response = await fetch(url);
             let summary = await response.json();
+            loading.classList.add("hidden");
             displaySummary(summary);
         }
         getSummary();
