@@ -478,7 +478,7 @@ where value is that (pasted) value, without any space immediately before or afte
         ```
 
 
-- #### /api/user/profile/change/username?username=<string:new_username>
+- #### /api/user/profile/change/username?new_username=<string:new_username>
     - GET
         - successful
         ```json

@@ -35,13 +35,13 @@ Profile
                 <p id="displayOldError" class="hidden"></p>
             </div>
             <div>
-                <label for="password" class="block text-slate-500">Password</label>
+                <label for="new_password" class="block text-slate-500">Password</label>
                 <p class="relative">
-                <input type="password" name="password" id="password" placeholder="Enter password"
+                <input type="password" name="new_password" id="new_password" placeholder="Enter password"
                     class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
-                    <img id="passwordEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
+                    <img id="passwordEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('new_password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
                 </p>
-                <p id="displayError" class="hidden"></p>
+                <p id="displayNewError" class="hidden text-red-400"></p>
             </div>
             <div>
                 <label for="confirm_password" class="block text-slate-500">Confirm Password</label>
@@ -50,7 +50,8 @@ Profile
                     class="bg-slate-200 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 outline-none p-2 w-full">
                     <img id="confirmEyeImage" src="../assets/icons/eye_open.svg" alt="closed eye icon" onclick="toggleVisibility('confirm_password')" class="hover:cursor-pointer absolute top-0 right-0 m-2">
                 </p>
-                <p id="displayConfirmError" class="hidden"></p>
+                <p id="displayConfirmError" class="hidden text-red-400"></p>
+                <p id="displayConfirmSuccess" class="hidden text-green-400"></p>
             </div>
             <div class="flex items-center justify-center">
                 <button type="button" id="updatePasswordButton"
@@ -59,17 +60,18 @@ Profile
             <script>
                 const username = document.querySelector("#username");
                 const old_password = document.querySelector("#old_password");
-                const password = document.querySelector("#password");
+                const new_password = document.querySelector("#new_password");
                 const confirm_password = document.querySelector("#confirm_password");
                 const updateUsernameButton = document.querySelector("#updateUsernameButton");
                 const updatePasswordButton = document.querySelector("#updatePasswordButton");
+                let displayOldError = document.querySelector("#displayOldError");
+                let displayNewError = document.querySelector("#displayNewError");
+                let displayConfirmError = document.querySelector("#displayConfirmError");
                 let displayUserNameError = document.querySelector("#displayUserNameError");
                 let displayUserNameSuccess = document.querySelector("#displayUserNameSuccess");
                 let passwordEyeImage = document.querySelector("#passwordEyeImage");
                 let confirmEyeImage = document.querySelector("#confirmEyeImage");
                 let oldEyeImage = document.querySelector("#oldEyeImage");
-                const usernamePattern = /^[a-zA-Z][a-z_A-Z0-9]{3,}$/;
-                const passwordPattern = /^\S{6,}$/;
 
                 function addText (text) {
                     if (text === "add") {
@@ -82,8 +84,8 @@ Profile
                 function toggleVisibility (input) {
                     let inputToggle;
                     let eyeImage;
-                    if (input === "password") {
-                        inputToggle = password;
+                    if (input === "new_password") {
+                        inputToggle = new_password;
                         eyeImage = passwordEyeImage;
                     } else if (input === "confirm_password") {
                         inputToggle = confirm_password;
@@ -114,14 +116,12 @@ Profile
                 }
 
                 async function updateUsername () {
-                    url = `/api/user/profile/change/username?username=${username.value}`;
+                    url = `/api/user/profile/change/username?new_username=${username.value}`;
                     const response = await fetch(url);
                     const result = await response.json();
-                    console.log(username.value);
-                    console.log(result);
-                    console.log(url);
-                    if (result.answer === "success") {
+                    if (result.flag === "success") {
                         // successfully updated username
+                        displayUserNameError.classList.add("hidden");
                         displayUserNameSuccess.textContent = 'Username updated successfully';
                         displayUserNameSuccess.classList.remove("hidden");
                     } else {
@@ -156,13 +156,84 @@ Profile
                 username.addEventListener("keyup", () => {
                     displayUserNameError.textContent = '';
                     displayUserNameError.classList.add("hidden");
+                    displayUserNameSuccess.textContent = '';
+                    displayUserNameSuccess.classList.add("hidden");
                     checkFormat('keyup')
                 });
 
                 updateUsernameButton.addEventListener("click", () => {
                     displayUserNameError.textContent = '';
                     displayUserNameError.classList.add("hidden");
+                    displayUserNameSuccess.textContent = '';
+                    displayUserNameSuccess.classList.add("hidden");
                     checkFormat('click');
+                });
+
+                function checkNewPassword () {
+                    if (/\s/.test(new_password.value)) {
+                        displayNewError.textContent = 'Password cannot contain spaces';
+                        displayNewError.classList.remove("hidden");
+                    } else if (!/^\S{6,}$/.test(new_password.value)) {
+                        displayNewError.textContent = 'Password should be at least 6 characters long';
+                        displayNewError.classList.remove("hidden");
+                    } else if (/^\S{6,}$/.test(new_password.value)) {
+                        displayNewError.textContent = '';
+                        displayNewError.classList.add("hidden");
+                        return true;
+                    } else {
+                        displayNewError.textContent = '';
+                        displayNewError.classList.add("hidden");
+                    }
+                    return false;
+                }
+
+                new_password.addEventListener("keyup", () => {
+                    checkNewPassword();
+                });
+
+                function checkConfirmPassword () {
+                    if (new_password.value !== confirm_password.value) {
+                        displayConfirmError.textContent = 'Passwords do not match';
+                        displayConfirmError.classList.remove("hidden");
+                    } else {
+                        displayConfirmError.textContent = '';
+                        displayConfirmError.classList.add("hidden");
+                        return true;
+                    }
+                    return false;
+                }
+
+                confirm_password.addEventListener("keyup", () => {
+                    checkConfirmPassword();
+                });
+
+                async function updatePassword () {
+                    url = `/api/user/profile/change/password?old_password=${old_password.value}&new_password=${new_password.value}`;
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    if (result.flag === "success") {
+                        // successfully updated password
+                        displayOldError.classList.add("hidden");
+                        displayNewError.classList.add("hidden");
+                        displayConfirmError.classList.add("hidden");
+                        displayConfirmSuccess.textContent = 'Password updated successfully';
+                        displayConfirmSuccess.classList.remove("hidden");
+                    } else {
+                        displayOldError.textContent = 'Incorrect password';
+                        displayOldError.classList.remove("hidden");
+                    }
+                }
+
+                updatePasswordButton.addEventListener("click", () => {
+                    displayOldError.textContent = '';
+                    displayOldError.classList.add("hidden");
+                    displayNewError.textContent = '';
+                    displayNewError.classList.add("hidden");
+                    displayConfirmError.textContent = '';
+                    displayConfirmError.classList.add("hidden");
+                    if (checkNewPassword() && checkConfirmPassword()) {
+                        updatePassword();
+                    }
                 });
 
             </script>
