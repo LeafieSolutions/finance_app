@@ -56,7 +56,6 @@ Sell
                 companyNames = Object.keys(companyShares);
 
                 if (companyNames.length > 0) {
-                    console.log(companyShares[`${companyNames[0]}`])
                     enableForm();
                 } else {
                     loading_sign.classList.add("hidden");
@@ -74,7 +73,6 @@ Sell
 
             function enableShares() {
                 shares.disabled = false;
-                console.log(companyShares[`${company_name.value}`])
                 shares.setAttribute("max", companyShares[`${company_name.value}`]);
             }
 
@@ -140,7 +138,7 @@ Sell
             });
 
             async function getSellResponse() {
-                let url = `/api/Sell?company_name=${company_name.value}&shares=${shares.value}`;
+                let url = `/api/sell?company_name=${company_name.value}&shares=${shares.value}`;
                 response = await fetch(url);
                 let sellResponse = await response.json();
 
@@ -158,22 +156,28 @@ Sell
                 let doneImage = createElement("img");
                 let message = createElement("p");
                 let moreMessage = createElement("p");
+                let muchMessage = createElement("p");
                 let companyName = createElement("p");
+                let sharesSold = createElement("p");
                 let price = createElement("p");
                 let dismissButton = createElement("button");
 
                 companyName.classList.add("font-bold", "text-purple-400", "block");
+                sharesSold.classList.add("font-bold", "text-purple-400", "inline");
                 price.classList.add("font-bold", "text-purple-400", "inline");
                 message.classList.add("inline");
                 moreMessage.classList.add("inline");
+                muchMessage.classList.add("inline");
                 SellDiv.classList.add("p-10","rounded-lg", "flex", "flex-col", "items-center", "gap-10", "shadow-sm", "shadow-slate-800", "h-1/2", "w-2/3", "bg-white");
                 dismissButton.classList.add("bg-purple-800", "font-bold", "text-xl", "text-white", "p-2", "px-16", "rounded-xl", "sm:text-2xl", "sm:p-3", "sm:px-24");
                 sellForm.classList.add("hidden");
 
-                companyName.textContent = sellResponse.name;
-                price.textContent = `$${sellResponse.price}`;
+                companyName.textContent = company_name.value;
+                sharesSold.textContent = `${shares.value} `;
+                price.textContent = `$${sellResponse.total_share_cost.toFixed(2)}`;
                 message.textContent = "You have successfully sold ";
                 moreMessage.textContent = ' shares of ';
+                muchMessage.textContent = " at ";
                 doneImage.setAttribute("src", "../assets/icons/done.svg");
                 dismissButton.textContent = "Ok";
 
@@ -182,7 +186,7 @@ Sell
                     while (showSellResponse.firstChild) {
                         showSellResponse.removeChild(showSellResponse.firstChild);
                     }
-                    // showSellResponse.classList.add("hidden");
+                    showSellResponse.classList.add("hidden");
                     company_name.value = "";
                     shares.value = "";
                 });
@@ -191,8 +195,10 @@ Sell
                 }
 
                 fullMessage.appendChild(message);
-                fullMessage.appendChild(companyName);
+                fullMessage.appendChild(sharesSold);
                 fullMessage.appendChild(moreMessage);
+                fullMessage.appendChild(companyName);
+                fullMessage.appendChild(muchMessage);
                 fullMessage.appendChild(price);
                 SellDiv.appendChild(doneImage);
                 SellDiv.appendChild(fullMessage);
@@ -208,7 +214,7 @@ Sell
                         return;
                     }
                 })
-                if (validName) {
+                if (validName && shares.value <= companyShares[`${company_name.value}`]) {
                     loading();
                     getSellResponse();
                 } else {
@@ -216,7 +222,7 @@ Sell
                         listNames.removeChild(listNames.firstChild);
                     }
                     let errorMessage = createElement("p");
-                    errorMessage.textContent = "Please enter a valid company name";
+                    shares.value > companyShares[`${company_name.value}`] ? errorMessage.textContent = `Your maximum shares is ${companyShares[`${company_name.value}`]}` : errorMessage.textContent = "Please enter a valid company name";
                     errorMessage.classList.add("text-red-500");
                     listNames.appendChild(errorMessage);
                 }
