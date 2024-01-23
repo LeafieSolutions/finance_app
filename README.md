@@ -109,7 +109,7 @@ where value is that (pasted) value, without any space immediately before or afte
         register.html
         ```
 
-- #### /api/register?username=<string:username>
+- #### /api/register/username_exists?username=<string:username>
     - GET
         - null username
         ```json
@@ -132,6 +132,7 @@ where value is that (pasted) value, without any space immediately before or afte
             "reason": "not exist",
         }
         ```
+
 
 - ####  /api/register?username=<string:username>&password=<string:password>
     - GET
@@ -452,7 +453,7 @@ where value is that (pasted) value, without any space immediately before or afte
         "testuser"
         ```
 
-- #### /api/register/username_exists
+- #### /api/register/username_exists?username=<string:username>
     - GET
         - null username
         ```json
@@ -475,6 +476,7 @@ where value is that (pasted) value, without any space immediately before or afte
             "reason": "not exist",
         }
         ```
+
 
 - #### /api/user/profile/change/username?username=<string:new_username>
     - GET

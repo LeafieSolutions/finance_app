@@ -157,7 +157,7 @@ def render_login_page():
 
 
 @application.route("/api/register/username_exists")
-def username_exists():
+def check_username_exists():
     """Check if username exists"""
 
     validate_request_method(request, "GET")
