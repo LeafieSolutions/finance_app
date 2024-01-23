@@ -31,14 +31,7 @@
                 </a>
                 <a href="/logout">Log Out</a>
             </div>
-            <script>
-                let names;
-                async function getNames() {
-                    let url = 'api/company_names'
-                    response = await fetch(url);
-                    names = await response.json();
-                }
-                getNames();
+            <script src="../assets/js/layout.js">
             </script>
         </div>
         {% else %}
