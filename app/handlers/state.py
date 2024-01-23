@@ -36,16 +36,19 @@ class State:
 
         formatted_states = []
         for ticker_state in ticker_states:
-            price = Company.get_share_price(ticker_state["comp_ticker"])
-            formatted_states.append(
-                {
-                    "name": Company.get_name(ticker_state["comp_ticker"]),
-                    "ticker": ticker_state["comp_ticker"],
-                    "price": price,
-                    "shares": ticker_state["shares"],
-                    "total": ticker_state["shares"] * price,
-                }
-            )
+            shares = ticker_state["shares"]
+
+            if shares >= 0:
+                price = Company.get_share_price(ticker_state["comp_ticker"])
+                formatted_states.append(
+                    {
+                        "name": Company.get_name(ticker_state["comp_ticker"]),
+                        "ticker": ticker_state["comp_ticker"],
+                        "price": price,
+                        "shares": shares,
+                        "total": ticker_state["shares"] * price,
+                    }
+                )
 
         formatted_states.sort(key=lambda x: x["name"], reverse=False)
         return formatted_states
@@ -116,7 +119,9 @@ class State:
 
         shares = {}
         for ticker_state in ticker_states:
-            name = Company.get_name(ticker_state["comp_ticker"])
-            shares[name] = ticker_state["shares"]
+            shares = ticker_state["shares"]
+            if shares >= 0:
+                name = Company.get_name(ticker_state["comp_ticker"])
+                shares[name] = ticker_state["shares"]
 
         return shares
