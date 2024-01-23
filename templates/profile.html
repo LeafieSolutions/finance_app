@@ -18,6 +18,11 @@ Profile
                 <input type="text" name="username" id="username" placeholder="Enter your username" autocomplete="off"
                     class="bg-slate-200 outline-none p-2 border border-purple-600 rounded-lg focus:border-2 focus:border-purple-800 focus:bg-slate-300 w-full"
                     required pattern="[a-zA-Z][a-z_A-Z0-9]+" value="{{username}}">
+                <p id="displayUserNameError" class="hidden text-red-400"></p>
+            </div>
+            <div class="flex items-center justify-center">
+                <button type="button" id="submitUsernameButton"
+                    class="bg-purple-900 font-bold text-xl text-white p-2 px-12 rounded-2xl">Update Username</button>
             </div>
             <div>
                 <label for="old_password" class="block text-slate-500">Old Password</label>
@@ -47,15 +52,17 @@ Profile
                 <p id="displayConfirmError" class="hidden"></p>
             </div>
             <div class="flex items-center justify-center">
-                <button type="button" id="submitButton"
-                    class="bg-purple-900 font-bold text-xl text-white p-2 px-12 rounded-2xl">Update</button>
+                <button type="button" id="submitPasswordButton"
+                    class="bg-purple-900 font-bold text-xl text-white p-2 px-12 rounded-2xl">Update Password</button>
             </div>
             <script>
                 const username = document.querySelector("#username");
                 const old_password = document.querySelector("#old_password");
                 const password = document.querySelector("#password");
                 const confirm_password = document.querySelector("#confirm_password");
-                const submitButton = document.querySelector("#submitButton");
+                const submitUsernameButton = document.querySelector("#submitUsernameButton");
+                const submitPasswordButton = document.querySelector("#submitPasswordButton");
+                let displayUserNameError = document.querySelector("#displayUserNameError");
                 let passwordEyeImage = document.querySelector("#passwordEyeImage");
                 let confirmEyeImage = document.querySelector("#confirmEyeImage");
                 let oldEyeImage = document.querySelector("#oldEyeImage");
@@ -91,6 +98,39 @@ Profile
                     eyeImage.src = "../assets/icons/eye_open.svg";
                 }
             }
+
+            async function checkUsername () {
+                url = `/api/register/username_exists?username=${username.value}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                if (result.reason === "exist") {
+                    console.log("exist");
+                } else {
+                    console.log("not exist");
+                }
+            }
+
+            function checkFormat () {
+                if (/\s+/.test(username.value)) {
+                    displayUserNameError.textContent = 'Username cannot contain spaces';
+                    displayUserNameError.classList.remove("hidden");
+                } else if (/^[0-9]+/.test(username.value)) {
+                    displayUserNameError.textContent = 'Username should start with a letter';
+                    displayUserNameError.classList.remove("hidden");
+                } else if (!/^\S{4,}$/) {
+                    displayUserNameError.textContent = 'Username should be at least 4 characters long';
+                    displayUserNameError.classList.remove("hidden");
+                } else if (/^\S{4,}$/) {
+                    displayUserNameError.textContent = '';
+                    displayUserNameError.classList.add("hidden");
+                    checkUsername();
+                } else {
+                    displayUserNameError.textContent = '';
+                    displayUserNameError.classList.add("hidden");
+                }}
+
+            username.addEventListener("keyup", checkFormat());
+
             </script>
         </div>
     </form>

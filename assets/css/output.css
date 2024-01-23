@@ -1261,6 +1261,14 @@ html {
   width: 100%;
 }
 
+.w-4\/5 {
+  width: 80%;
+}
+
+.w-1\/5 {
+  width: 20%;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -1425,6 +1433,10 @@ html {
   padding: 2rem;
 }
 
+.p-1 {
+  padding: 0.25rem;
+}
+
 .px-12 {
   padding-left: 3rem;
   padding-right: 3rem;
@@ -1438,6 +1450,16 @@ html {
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .text-left {
@@ -1468,6 +1490,11 @@ html {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 .font-bold {
