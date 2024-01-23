@@ -337,6 +337,17 @@ where value is that (pasted) value, without any space immediately before or afte
         sell.html
         ```
 
+- #### /api/user/company_shares
+    - GET
+        ```json
+        {
+            "Apple Inc": 2,
+            "Goldman Sachs Physical Gold ETF Trust - Goldman Sachs Physical Gold ETF": 2,
+            "Microsoft Corporation": 3,
+            "Tesla Inc": 4
+        }
+        ```
+
 - #### /api/user/company_names
     - GET
         ```json

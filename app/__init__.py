@@ -19,15 +19,13 @@ from .helpers import (
     validate_request_method,
     validate_username,
 )
-from .handlers import (
-    ASSETS_DIR,
-    COMPANY_NAMES,
-    TEMPLATES_DIR,
-    Company,
-    State,
-    Transaction,
-    User,
-)
+
+from .handlers.transaction import Transaction
+from .handlers import ASSETS_DIR, TEMPLATES_DIR
+
+from .handlers.company import Company
+from .handlers.user import User
+from .handlers.state import State
 
 
 # Configure application
@@ -314,7 +312,7 @@ def render_home_page():
 def get_company_names():
     """Get company names"""
     validate_request_method(request, "GET")
-    return jsonify(COMPANY_NAMES)
+    return jsonify(Company.get_names())
 
 
 @application.route("/api/quote/")
@@ -463,6 +461,15 @@ def get_user_companies():
 
     validate_request_method(request, "GET")
     return jsonify(State.get_companies(session["user_id"]))
+
+
+@application.route("/api/user/company_shares")
+@login_required
+def get_user_shares():
+    """Get user shares"""
+
+    validate_request_method(request, "GET")
+    return jsonify(State.get_shares(session["user_id"]))
 
 
 @application.route("/api/sell")
