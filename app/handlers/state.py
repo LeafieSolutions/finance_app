@@ -38,7 +38,7 @@ class State:
         for ticker_state in ticker_states:
             shares = ticker_state["shares"]
 
-            if shares >= 0:
+            if shares > 0:
                 price = Company.get_share_price(ticker_state["comp_ticker"])
                 formatted_states.append(
                     {
@@ -117,11 +117,11 @@ class State:
             user_id,
         )
 
-        shares = {}
+        shares_info = {}
         for ticker_state in ticker_states:
             shares = ticker_state["shares"]
-            if shares >= 0:
+            if shares > 0:
                 name = Company.get_name(ticker_state["comp_ticker"])
-                shares[name] = ticker_state["shares"]
+                shares_info[name] = shares
 
-        return shares
+        return shares_info
