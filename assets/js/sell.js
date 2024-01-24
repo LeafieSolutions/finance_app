@@ -190,6 +190,10 @@ function displaySell(sellResponse) {
         company_name.value = "";
         shares.value = "";
     });
+
+    while (listNames.firstChild) {
+        listNames.removeChild(listNames.firstChild);
+    }
     while (showSellResponse.firstChild) {
         showSellResponse.removeChild(showSellResponse.firstChild);
     }
