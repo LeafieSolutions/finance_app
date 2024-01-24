@@ -5,6 +5,7 @@ const confirm_password = document.querySelector("#confirm_password");
 const submitButton = document.querySelector("#submitButton");
 const displayError = document.querySelector("#displayError");
 let displayUserNameError = document.querySelector("#displayUserNameError");
+let displayUserNameSuccess = document.querySelector("#displayUserNameSuccess");
 let displayConfirmError = document.querySelector("#displayConfirmError");
 let passwordEyeImage = document.querySelector("#passwordEyeImage");
 let confirmEyeImage = document.querySelector("#confirmEyeImage");
@@ -17,24 +18,43 @@ async function getUser() {
     let result = await response.json();
 }
 
-username.addEventListener("keyup", () => {
-    if (/\s+/.test(username.value)) {
+async function checkUsername () {
+    let url = `/api/register/username_exists?username=${username.value}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    if (result.answer === "exist") {
+        displayUserNameError.classList.remove("hidden");
+        displayUserNameError.textContent = 'Username already exists';
+    } else {
+        displayUserNameSuccess.classList.remove("hidden");
+        displayUserNameSuccess.textContent = 'Username available';
+    }
+}
+
+function checkFormat () {
+    displayUserNameError.textContent = '';
+    displayUserNameError.classList.add("hidden");
+    displayUserNameSuccess.textContent = '';
+    displayUserNameSuccess.classList.add("hidden");
+    if (username.value === "") {
+        displayUserNameError.textContent = 'Username cannot be empty';
+        displayUserNameError.classList.remove("hidden");
+    } else if (/\s+/.test(username.value)) {
         displayUserNameError.textContent = 'Username cannot contain spaces';
         displayUserNameError.classList.remove("hidden");
     } else if (/^[0-9]+/.test(username.value)) {
         displayUserNameError.textContent = 'Username should start with a letter';
         displayUserNameError.classList.remove("hidden");
-    } else if (!/^\S{4,}$/) {
+    } else if (!/^\S{4,}$/.test(username.value)) {
         displayUserNameError.textContent = 'Username should be at least 4 characters long';
         displayUserNameError.classList.remove("hidden");
-    } else if (/^\S{4,}$/) {
-        displayUserNameError.textContent = '';
-        displayUserNameError.classList.add("hidden");
-        getUser();
-    } else {
-        displayUserNameError.textContent = '';
-        displayUserNameError.classList.add("hidden");
+    } else if (/^\S{4,}$/.test(username.value)) {
+        checkUsername();
     }
+}
+
+username.addEventListener("keyup", () => {
+    checkFormat();
 });
 
 async function register() {
