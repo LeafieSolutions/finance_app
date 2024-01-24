@@ -21,7 +21,7 @@ class User:
     @staticmethod
     def username_exists(username: str):
         """Check if username already exists in the database"""
-        user = execute_sql("SELECT * FROM users WHERE username = ?", username)
+        user = execute_sql("SELECT username FROM users WHERE username = ?", username)
         return len(user) == 1
 
     @staticmethod

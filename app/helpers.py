@@ -69,4 +69,4 @@ def validate_username(username):
 
 def validate_password(password):
     """Parse password"""
-    return regex_match(r"/^\S{6,}$/", password)
+    return regex_match(r"^\S{6,}$", password)
