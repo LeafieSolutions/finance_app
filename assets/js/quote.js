@@ -30,6 +30,12 @@ function displayNames() {
                 listNames.removeChild(listNames.firstChild);
             }
         });
+        name.addEventListener('mouseover', () => {
+            name.classList.add("bg-slate-400");
+        });
+        name.addEventListener('mouseout', () => {
+            name.classList.remove("bg-slate-400");
+        });
         listNames.appendChild(name);
     }
 }

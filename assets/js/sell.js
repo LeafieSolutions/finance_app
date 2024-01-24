@@ -62,6 +62,12 @@ function displayNames() {
                 enableShares();
             }
         });
+        name.addEventListener('mouseover', () => {
+            name.classList.add("bg-slate-400");
+        });
+        name.addEventListener('mouseout', () => {
+            name.classList.remove("bg-slate-400");
+        });
         listNames.appendChild(name);
     }
 }
@@ -85,6 +91,38 @@ function checkNames() {
             listNames.removeChild(listNames.firstChild);
         }
 
+    }
+}
+
+company_name.addEventListener('focusin', () => {
+    if (company_name.value === "") {
+        displayOwned();
+    }
+});
+
+function displayOwned() {
+    while (listNames.firstChild) {
+        listNames.removeChild(listNames.firstChild);
+    }
+    let length = companyNames.length > 5 ? 5 : companyNames.length;
+    for (let i = 0; i < length; i++) {
+        let name = createElement("button");
+        name.classList.add("w-full", "text-left", "text-slate-500", "hover:bg-slate-400", "hover:text-white", "p-2", "rounded-lg", "focus:outline-none");
+        name.textContent = companyNames[i];
+        name.addEventListener('click', () => {
+            company_name.value = companyNames[i];
+            while (listNames.firstChild) {
+                listNames.removeChild(listNames.firstChild);
+                enableShares();
+            }
+        });
+        name.addEventListener('mouseover', () => {
+            name.classList.add("bg-slate-400");
+        });
+        name.addEventListener('mouseout', () => {
+            name.classList.remove("bg-slate-400");
+        });
+        listNames.appendChild(name);
     }
 }
 
@@ -138,7 +176,7 @@ function displaySell(sellResponse) {
     sharesSold.textContent = `${shares.value} `;
     price.textContent = `$${sellResponse.total_share_cost.toFixed(2)}`;
     message.textContent = "You have successfully sold ";
-    moreMessage.textContent = ' shares of ';
+    moreMessage.textContent = ` ${shares.value === 1 ? "share" : "shares"} of `;
     muchMessage.textContent = " at ";
     doneImage.setAttribute("src", "../assets/icons/done.svg");
     dismissButton.textContent = "Ok";
