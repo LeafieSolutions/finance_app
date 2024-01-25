@@ -4,9 +4,11 @@
 Apology
 {% endblock %}
 {% block main %}
-<div>
-    <h1>Sorry!</h1>
-    <p>{{ error_code }}</p>
-    <p>{{ message }}</p>
+<div class="w-full flex items-center justify-center text-black" style="height: 80vh;">
+    <div class="flex flex-col items-center justify-center gap-10 p-10 px-40 border border-green-400 rounded-xl">
+        <h3 class="text-4xl font-bold">Error</h3>
+        <h1 class="text-blue-600 text-9xl font-extrabold">{{ error_code }}</h1>
+        <p class="text-xl">{{ error_message }}</p>
+    </div>
 </div>
 {% endblock %}
