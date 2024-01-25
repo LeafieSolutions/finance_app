@@ -35,7 +35,7 @@ def render_error(message, code=400):
             "error.html",
             **{
                 "error_code": code,
-                "message": escape(message),
+                "error_message": escape(message),
             },
         ),
         code,

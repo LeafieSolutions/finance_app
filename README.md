@@ -566,3 +566,12 @@ where value is that (pasted) value, without any space immediately before or afte
         }
         ```
     
+
+### Error
+
+- #### Any error not handled in frontend
+
+    - Jinja Template
+         - error_code
+         - error_message
+
