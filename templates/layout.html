@@ -15,8 +15,8 @@
 <body class="min-h-screen relative bg-white text-slate-800">
     <nav class="bg-black p-2">
         {% if session["user_id"] %}
-        <div class="flex justify-between items-center w-full relative md:justify-around">
-            <a href="/" class="flex flex-wrap items-center overflow-auto">
+        <div class="flex justify-between items-center w-full relative md:justify-around" id="navbar">
+            <a href="/" class="flex flex-wrap items-center overflow-auto" id="logo">
                 <img src="../assets/icons/favicon.svg" alt="logo" class="w-8 h-12 md:w-12 md:h-16">
                 <p class="text-white text-lg sm:text-xl">Stock Portfolio Manager</p>
             </a>
@@ -31,9 +31,9 @@
                 </a>
                 <a href="/logout" class="inline p-2 px-4 rounded-lg hover:bg-gray-800">Log Out</a>
             </div>
-            <div class="relative md:hidden hover:cursor-pointer">
+            <div class="relative md:hidden hover:cursor-pointer" id="hamburger">
                 <div id="hamburgerMenu" class="flex flex-col right-0">
-                    <img id="hamburgerImage" src="../assets/icons/hamburger.svg" alt="menu" onclick="showMenu()">
+                    <img id="hamburgerImage" class="w-8 h-12" src="../assets/icons/hamburger.svg" alt="menu" onclick="showMenu()">
                 </div>
             </div>
             <script src="../assets/js/layout.js">

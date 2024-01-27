@@ -1,8 +1,11 @@
+let navbar = document.querySelector('#navbar');
+let logo = document.querySelector('#logo');
 let quote = document.querySelector('#quote');
 let sell = document.querySelector('#sell');
 let buy = document.querySelector('#buy');
 let history = document.querySelector('#history');
 let profile = document.querySelector('#profile');
+let hamburger = document.querySelector('#hamburger');
 let hamburgerMenu = document.querySelector('#hamburgerMenu');
 let hamburgerImage = document.querySelector('#hamburgerImage');
 let closeButton = document.createElement('button');
@@ -34,6 +37,7 @@ closeButton.addEventListener('click', () => {
     profile.classList.remove('flex', 'flex-col');
     hamburgerMenu.classList.remove('absolute', 'top-0', 'bg-black', 'rounded-lg', 'shadow-lg', 'w-48', 'z-10');
     hamburgerMenu.appendChild(hamburgerImage);
+    restoreNav();
 });
 
 function showMenu () {
@@ -58,5 +62,14 @@ function showMenu () {
 }
 
 function restoreNav () {
-    //
+    while (navbar.firstChild) {
+        navbar.removeChild(navbar.firstChild);
+    }
+    navbar.appendChild(logo);
+    navbar.appendChild(quote);
+    navbar.appendChild(sell);
+    navbar.appendChild(buy);
+    navbar.appendChild(history);
+    navbar.appendChild(profile);
+    navbar.appendChild(hamburger);
 }
