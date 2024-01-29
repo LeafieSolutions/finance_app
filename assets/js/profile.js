@@ -63,7 +63,7 @@ async function checkUsername () {
     if (result.answer === "exist") {
         displayUserNameError.textContent = 'Username already exists';
     } else {
-        displayUserNameError.textContent = 'Username available';
+        displayUserNameSuccess.textContent = 'Username available';
     }
 }
 
