@@ -18,12 +18,7 @@
     pip3 | `wget https://bootstrap.pypi.io/get-pip.py; python3 get-pip.py; rm get-pip.py`
     virtualenv | `pip3 install virtualenv`
 
-
-- Clone [the repo](https://github.com/LeafieSolutions/finance_app): `git clone https://github.com/LeafieSolutions/finance_app`
-
-- Create a virtual environment: `virtualenv ".env_$(basename $PWD)"`
-
-- Activate it: `source ".env_$(basename $PWD)/bin/activate"`
+- Create and activate virtual enviroment
 
 - Install dependencies: `pip3 install -r requirements.txt`
 
