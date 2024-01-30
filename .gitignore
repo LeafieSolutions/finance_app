@@ -11,6 +11,9 @@ finance.db
 # FLask session
 *flask_session*
 
+# Jetbrains Settings
+*.idea*
+
 # Initialization files
 run
 
